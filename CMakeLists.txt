@@ -35,18 +35,19 @@ if(BEAM24_ENABLE_CUDA AND CMAKE_CUDA_COMPILER)
   beam24_add_cuda_target(
     beam24_hierarchical_system src/cuda/beam24_hierarchical_system.cu)
   beam24_add_cuda_target(
+    beam24_hierarchical_quality src/cuda/beam24_hierarchical_quality.cu)
+  target_compile_definitions(
+    beam24_hierarchical_quality PRIVATE BEAM24_FINITE_QUALITY=1)
+  target_link_libraries(beam24_hierarchical_quality PRIVATE CUDA::cublas)
+  beam24_add_cuda_target(
     beam24_hierarchical_exhaustive src/cuda/beam24_hierarchical_system.cu)
   target_compile_definitions(
     beam24_hierarchical_exhaustive PRIVATE BEAM24_DEFAULT_MODE=0)
   beam24_add_cuda_target(beam24_dense_fused src/cuda/dense_fused_baseline.cu)
   beam24_add_cuda_target(
-    beam24_cufft_lower_bound baselines/cuda/cufft_top1_lower_bound.cu)
-  target_link_libraries(beam24_cufft_lower_bound PRIVATE CUDA::cufft)
-  beam24_add_cuda_target(
-    beam24_cufft_fp16_rejected baselines/cuda/cufft_top1_lower_bound.cu)
-  target_compile_definitions(
-    beam24_cufft_fp16_rejected PRIVATE BEAM24_CUFFT_HALF=1)
-  target_link_libraries(beam24_cufft_fp16_rejected PRIVATE CUDA::cufft)
+    beam24_cufft_streamed_top1
+    baselines/cuda/cufft_streamed_uniform_angle_top1.cu)
+  target_link_libraries(beam24_cufft_streamed_top1 PRIVATE CUDA::cufft)
 else()
   message(STATUS "CUDA compiler unavailable; configured CPU-only project checks")
 endif()

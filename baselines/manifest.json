@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 6,
   "frozen_contract": {
     "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
     "compute_capability": "12.0",
@@ -247,16 +247,16 @@
       "purpose": "external same-algorithm hierarchical denominator"
     },
     {
-      "id": "CUFFT_UNIFORM_SPATIAL_FREQUENCY_LOWER_BOUND",
+      "id": "CUFFT_STREAMED_UNIFORM_ANGLE_TOP1",
       "tier": "system",
       "ownership": "external",
-      "table_role": "lower_bound",
-      "name": "cuFFT materialized uniform-spatial-frequency power/top-1 lower bound",
+      "table_role": "main",
+      "name": "streamed L4096 cuFFT with uniform-angle interpolation and top-1",
       "source": "cuda_toolkit",
-      "implementation": "baselines/cuda/cufft_top1_lower_bound.cu",
+      "implementation": "baselines/cuda/cufft_streamed_uniform_angle_top1.cu",
       "status": "measured",
       "required": true,
-      "purpose": "optimistic Fourier-family screen; excludes uniform-angle interpolation"
+      "purpose": "strongest measured bounded-workspace Fourier system control"
     },
     {
       "id": "DENSE_FUSED_TOP1_CONTROL",

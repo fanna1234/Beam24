@@ -56,6 +56,7 @@ headline rows.
 |---|---|
 | ccglib materialized-top1 | One maximum power and beam index per batch |
 | ccglib hierarchical-top1 | Same hierarchy and output, with dynamic subarray-input and Stage-2 A gathers |
+| streamed cuFFT uniform-angle top1 | L4096 interpolation, bounded spectrum buffer, and the same final output |
 | Beam24 | Same output without materializing the complex matrix |
 
 K512 is the primary hierarchical result. The ccglib same-hierarchy row is
@@ -132,6 +133,8 @@ Completed:
 - ccglib materialized-top1 and Beam24 K512 system row;
 - optimistic FP32 cuFFT K512 system lower bound, with uniform-angle
   interpolation explicitly excluded and FP16 retained as rejected;
+- quality-passing streamed L4096 cuFFT with uniform-angle interpolation,
+  64 MiB bounded workspace, and direct power/top-1;
 - Beam24 quality on all four dataset families, including the LOCATA rejection;
 - hybrid Beam24-representation/cuSPARSELt backend K64/K128/K512 profile.
 

@@ -15,11 +15,13 @@ Targets:
 - `smoke`: CPU-only anchors, source checks, tests, and bounded synthetic ULA quality.
 - `gpu-smoke`: fresh SM120 build and small high-entropy correctness checks.
 - `quality`: checksum-pinned real-data quality rows under `BEAM24_DATA_ROOT`.
-- `robustness`: three-seed synthetic K512 regular-ULA perturbation gate; no GPU
-  or external dataset is required.
-- `fft-lower-bound`: six-process materialized FP32 cuFFT/Beam24 screen on
-  SM120; the target excludes uniform-angle interpolation and expects FP16
-  correctness to fail.
+- `robustness`: three-seed synthetic K512 perturbation gate plus an independent
+  margin/coverage and close-source stress audit; no GPU or external dataset is
+  required.
+- `finite-gpu-quality`: 33,792 finite-snapshot K512 trials through dense GPU,
+  exhaustive Local-F4 GPU, and complete hierarchical Beam24 GPU.
+- `fourier-control`: six-process streamed L4096 cuFFT/Beam24 comparison on
+  SM120 with uniform-angle interpolation and a bounded spectrum buffer.
 - `system`: six-process same-output internal D1/S2 attribution campaign on the
   validated GPU class.
 - `hierarchy`: six-process exhaustive-versus-hierarchical Beam24 ablation at

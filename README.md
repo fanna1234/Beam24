@@ -138,6 +138,12 @@ mixtures, and 500 coherent 64-snapshot mixtures. These results support top-1
 selection on regularly sampled line arrays; they do not establish general
 top-k recovery or arbitrary-array support.
 
+The finite-snapshot GPU campaign runs the complete FP16-input/FP32-power path
+on 33,792 held-out K512 trials. Beam24 matches dense GPU top-1 in 99.929% of
+trials; all 24 differences are one grid cell, and hierarchy adds no miss over
+exhaustive Local-F4. Five repeated replays are index-stable, with zero packed-A,
+metadata, or nonfinite errors.
+
 On 15 held-out SPIB P2701 moving-source and A2601_2 recordings, Local-F4
 matches dense top-1 in every file with zero grid shift and mean spectrum
 correlations of 0.999965 and 0.998332. The proportional K48 hierarchy fails on
@@ -167,6 +173,13 @@ candidate workspace and retains the exhaustive route when
 `batch × snapshots < 3072`, where its fixed multi-launch cost is slower on the
 measured SM120a K512 route.
 
+An independent 46,080-trial hierarchy audit separates 39,936 admitted K512
+cases from 6,144 close-source stress cases. Every admitted exhaustive Local-F4
+winner appears within the first four Stage-1 sectors: top-1/top-2/top-4 recall
+is 97.539%/99.679%/100%. Fixed top-8 therefore adds hardware-aligned slack for
+the 128-row Stage-2 tile. Close coherent stress produces two top-8 misses and a
+maximum coverage rank of 37, so no arbitrary-signal recall guarantee is made.
+
 A second measured point at batch64, M1024, N512, K512 retains 2.386x over the
 external identical-hierarchy path, 3.886x from global hierarchy, and 1.106x
 from local sparse execution, with 6/6 wins for every comparison. This is a
@@ -174,19 +187,14 @@ shape-local replication on the same GPU, not cross-GPU evidence. A proposed
 static-A Stage-1 hybrid is rejected because it is 1.429x slower than ccglib
 basic dynamic-A.
 
-The uniform-angle grid is nonuniform in spatial frequency. An optimistic
-interpolation-free materialized FP32 cuFFT lower bound takes 6.584 ms, versus
-2.157 ms for exhaustive Beam24 and 0.470 ms for the hierarchy. FP16 cuFFT is
-not promoted because its transform max-absolute error, 0.0521, exceeds the
-frozen 0.02 gate.
-
-The stricter same-grid comparator uses a quality-passing 4096-point FP32 cuFFT,
-linear complex interpolation to the 1024 uniform-angle beams, and direct
-power/top-1. It takes 27.301 ms versus 0.470 ms for Beam24, a measured 58.119x
-ratio. This result closes the evaluated materialized cuFFT implementation, not
-pruned NUFFT, CZT, or a hypothetical non-materialized Fourier algorithm.
-
-FP16 cuFFT is not promoted under either Fourier control.
+The strongest same-grid Fourier control uses a quality-passing 4096-point FP32
+cuFFT, linear complex interpolation, and direct power/top-1. It streams two
+batches at a time, reducing the full-spectrum workspace from 8 GiB to 64 MiB.
+The maintained implementation takes 7.769 ms versus 0.4708 ms for Beam24, a
+paired 16.498x ratio with 95% CI [16.484, 16.512] and 6/6 wins. A direct
+cuFINUFFT 2.6 type-2 control passes the 481-angle gate only at `eps=1e-6` and
+takes 1.633 s; it is retained as a rejected implementation rather than the
+Fourier headline. These results do not bound every specialized NUFFT or CZT.
 
 The exhaustive results below remain the representation/executor controls with
 no hierarchical work reduction.
@@ -280,17 +288,19 @@ export BEAM24_DATA_ROOT="$PWD/work/datasets"
 
 This CPU-only target runs three held-out seeds and 3,072 continuous-angle K512
 ULA trials per condition. It validates the bounded top-1 claim and preserves
-the rejected full-spectrum robustness gate as counterevidence.
+the rejected full-spectrum robustness gate as counterevidence. The same target
+also runs a disjoint 46,080-trial margin/coverage audit over top-L budgets and
+retains close coherent-source misses as the fixed-L worst-case boundary.
 
-### Materialized cuFFT lower bound
+### Streamed Fourier control
 
 ```bash
-./artifact/reproduce.sh fft-lower-bound
+./artifact/reproduce.sh fourier-control
 ```
 
-This SM120 target rebuilds the FP32 and rejected FP16 cuFFT paths, applies their
-declared correctness gates, and runs six F/E/H process orderings. It reproduces
-the optimistic interpolation-free materialized cuFFT lower bound.
+This SM120 target rebuilds the bounded-workspace L4096 cuFFT top-1 control,
+checks its deterministic output and memory safety, and runs six paired
+Fourier/Beam24 process orderings.
 
 ### Internal same-output attribution campaign
 

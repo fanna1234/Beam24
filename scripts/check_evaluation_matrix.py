@@ -24,7 +24,7 @@ def check_cells(label: str, rows: set[str], cells: dict[str, str]) -> None:
 def main() -> None:
     matrix = json.loads(MATRIX.read_text())
     manifest = json.loads(MANIFEST.read_text())
-    if matrix.get("version") != 2:
+    if matrix.get("version") != 3:
         raise SystemExit("unsupported evaluation matrix version")
     dataset_ids = {dataset["id"] for dataset in matrix["datasets"]}
     if set(matrix["quality_cells"]) != dataset_ids:

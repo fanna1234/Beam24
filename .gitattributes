@@ -6,3 +6,4 @@
 *.pdf binary
 *.png binary
 *.jpg binary
+baselines/cuda/cufft_top1_common.cuh whitespace=-blank-at-eof

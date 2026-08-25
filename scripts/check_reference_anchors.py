@@ -37,13 +37,11 @@ def main() -> None:
     same_hierarchy = load("evidence/results/system_external_same_hierarchy.json")
     quality = load("evidence/results/quality_spib48_vla.json")
     robustness = load("evidence/results/quality_regular_ula_robustness_top1.json")
-    fft = load("evidence/results/system_fft_baseline_sm120.json")
-    fft_same_grid = load("evidence/results/system_fourier_uniform_angle_sm120.json")
+    margin = load("evidence/results/quality_hierarchy_margin_coverage_heldout.json")
+    fft_streamed = load("evidence/results/system_fourier_streamed_top1_sm120.json")
     second_shape = load("evidence/results/system_hierarchy_secondshape_sm120.json")
     heldout_real = load("evidence/results/quality_spib48_heldout_sessions.json")
-    fft_repro = load(
-        "evidence/validation/fft_lower_bound_reproduce_sm120_2026-08-24.json"
-    )
+    finite_gpu = load("evidence/results/quality_gpu_finite_snapshot_k512.json")
     cold = load(
         "evidence/validation/hierarchy_headline_cold_reproduce_sm120_2026-08-24.json"
     )
@@ -115,6 +113,42 @@ def main() -> None:
         anchors["quality"]["regular_ula_robustness_local_minus_direct_correlation_min"],
         tolerance=1e-12,
     )
+    for label, evidence_key, anchor_key in (
+        ("hierarchy margin top1 recall", "top1", "hierarchy_margin_admitted_top1_recall"),
+        ("hierarchy margin top2 recall", "top2", "hierarchy_margin_admitted_top2_recall"),
+        ("hierarchy margin top4 recall", "top4", "hierarchy_margin_admitted_top4_recall"),
+        ("hierarchy margin top8 recall", "top8", "hierarchy_margin_admitted_top8_recall"),
+    ):
+        check(
+            label,
+            margin["admitted"]["recall"][evidence_key],
+            anchors["quality"][anchor_key],
+            tolerance=1e-12,
+        )
+    check(
+        "hierarchy margin admitted max rank",
+        margin["admitted"]["coverage_rank_max"],
+        anchors["quality"]["hierarchy_margin_admitted_max_rank"],
+        tolerance=0,
+    )
+    check(
+        "hierarchy margin rule-of-three upper bound",
+        margin["admitted"]["rule_of_three_miss_rate_upper_95"],
+        anchors["quality"]["hierarchy_margin_rule_of_three_upper_95"],
+        tolerance=1e-15,
+    )
+    check(
+        "hierarchy margin stress top8 recall",
+        margin["stress"]["close_coherent_top8_recall"],
+        anchors["quality"]["hierarchy_margin_stress_top8_recall"],
+        tolerance=1e-12,
+    )
+    check(
+        "hierarchy margin stress max rank",
+        margin["stress"]["close_coherent_coverage_rank_max"],
+        anchors["quality"]["hierarchy_margin_stress_max_rank"],
+        tolerance=0,
+    )
     check_reproduction(
         "cold hierarchy ablation reproduction",
         cold["performance"]["internal_hierarchy_ablation"]["paired_geomean_speedup"],
@@ -131,35 +165,28 @@ def main() -> None:
         anchors["system"]["hierarchical_external_ccglib_speedup"],
     )
     check(
-        "interpolated FFT SPIB correlation",
-        fft["quality"]["cpu_interpolated_fft_spib48"]["mean_map_correlation"],
-        anchors["quality"]["interpolated_fft_spib_mean_map_correlation"],
-        tolerance=5e-9,
-    )
-    check(
-        "optimistic cuFFT FP32 latency",
-        fft["performance"]["cufft_fp32"]["median_ms"],
-        anchors["system"]["optimistic_cufft_fp32_ms"],
-        tolerance=5e-5,
-    )
-    if fft["quality"]["fp16_fft_transform"]["status"] != "rejected":
-        raise SystemExit("FP16 cuFFT negative gate must remain rejected")
-    check_reproduction(
-        "cold cuFFT lower-bound reproduction",
-        fft_repro["performance"]["cufft_fp32_median_ms"],
-        anchors["system"]["optimistic_cufft_fp32_ms"],
-    )
-    check(
-        "same-grid cuFFT latency",
-        fft_same_grid["performance"]["cufft_uniform_angle_median_ms"],
-        anchors["system"]["same_grid_cufft_fp32_ms"],
+        "streamed cuFFT latency",
+        fft_streamed["performance"]["streamed_cufft_median_ms"],
+        anchors["system"]["streamed_cufft_fp32_ms"],
         tolerance=1e-9,
     )
     check(
-        "same-grid cuFFT over Beam24",
-        fft_same_grid["performance"]["paired_geomean_cufft_over_beam24"],
-        anchors["system"]["same_grid_cufft_over_beam24"],
+        "streamed cuFFT Beam24 latency",
+        fft_streamed["performance"]["beam24_median_ms"],
+        anchors["system"]["streamed_cufft_beam24_ms"],
+        tolerance=1e-9,
+    )
+    check(
+        "streamed cuFFT over Beam24",
+        fft_streamed["performance"]["paired_geomean_cufft_over_beam24"],
+        anchors["system"]["streamed_cufft_over_beam24"],
         tolerance=1e-12,
+    )
+    check(
+        "streamed cuFFT workspace bytes",
+        fft_streamed["workspace"]["streamed_spectrum_bytes"],
+        anchors["system"]["streamed_cufft_workspace_bytes"],
+        tolerance=0,
     )
     check(
         "Stage-1 static over basic",
@@ -208,8 +235,36 @@ def main() -> None:
         anchors["quality"]["heldout_real_hierarchy_exact_top1_min"],
         tolerance=1e-12,
     )
-    if fft_repro["correctness"]["fp16_status"] != "rejected":
-        raise SystemExit("cold FP16 cuFFT rejection must remain preserved")
+    check(
+        "finite GPU complete/dense exact top1",
+        finite_gpu["quality"]["complete_beam24_dense_exact_top1"],
+        anchors["quality"]["finite_gpu_complete_dense_exact_top1"],
+        tolerance=1e-15,
+    )
+    check(
+        "finite GPU hierarchy/local exact top1",
+        finite_gpu["quality"]["hierarchy_exhaustive_local_f4_exact_top1"],
+        anchors["quality"]["finite_gpu_hierarchy_local_exact_top1"],
+        tolerance=1e-15,
+    )
+    check(
+        "finite GPU complete/dense within one",
+        finite_gpu["quality"]["complete_beam24_dense_within_one_grid"],
+        anchors["quality"]["finite_gpu_complete_dense_within_one"],
+        tolerance=1e-15,
+    )
+    check(
+        "finite GPU maximum shift grid",
+        finite_gpu["quality"]["maximum_dense_shift_grid"],
+        anchors["quality"]["finite_gpu_max_shift_grid"],
+        tolerance=0,
+    )
+    check(
+        "finite GPU replay unstable",
+        finite_gpu["quality"]["replay_unstable"],
+        anchors["quality"]["finite_gpu_replay_unstable"],
+        tolerance=0,
+    )
 
 
 if __name__ == "__main__":

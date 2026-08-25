@@ -47,6 +47,8 @@ def main() -> None:
     same_hierarchy = load("evidence/results/system_external_same_hierarchy.json")
     multik = load("evidence/results/system_multik_sm120.json")
     workspace = load("evidence/results/system_workspace_elision.json")
+    fourier = load("evidence/results/system_fourier_streamed_top1_sm120.json")
+    margin = load("evidence/results/quality_hierarchy_margin_coverage_heldout.json")
     manifest = load("baselines/manifest.json")
 
     expected_roles = {
@@ -101,6 +103,18 @@ def main() -> None:
         "hierarchy sparse attribution",
     )
     close(
+        fourier["performance"]["paired_geomean_cufft_over_beam24"],
+        anchors["system"]["streamed_cufft_over_beam24"],
+        "streamed Fourier control",
+        tolerance=1e-12,
+    )
+    close(
+        margin["admitted"]["recall"]["top4"],
+        anchors["quality"]["hierarchy_margin_admitted_top4_recall"],
+        "hierarchy margin admitted top4 recall",
+        tolerance=1e-12,
+    )
+    close(
         multik["external_system"]["shapes"]["512"]["paired_speedup"],
         2.3666631961301055,
         "multi-K external system replication",
@@ -140,10 +154,20 @@ def main() -> None:
             f"{external_hierarchy_current} != "
             f"{external_hierarchy_recorded}"
         )
+    fourier_source = ROOT / "baselines/cuda/cufft_streamed_uniform_angle_top1.cu"
+    fourier_header = ROOT / "baselines/cuda/cufft_top1_common.cuh"
+    if sha256(fourier_source) != fourier["provenance"]["streamed_source_sha256"]:
+        raise SystemExit("streamed Fourier source hash drift")
+    if sha256(fourier_header) != fourier["provenance"]["streamed_common_header_sha256"]:
+        raise SystemExit("streamed Fourier common-header hash drift")
+    margin_source = ROOT / "src/quality/hierarchy_margin_coverage.py"
+    if sha256(margin_source) != margin["provenance"]["maintained_source_sha256"]:
+        raise SystemExit("hierarchy margin source hash drift")
 
     by_id = {entry["id"]: entry for entry in manifest["baselines"]}
     external = by_id["CCGLIB_MATERIALIZED_TOP1"]
     external_hierarchy = by_id["CCGLIB_HIERARCHICAL_TOP1"]
+    external_fourier = by_id["CUFFT_STREAMED_UNIFORM_ANGLE_TOP1"]
     attribution = by_id["DENSE_FUSED_TOP1_CONTROL"]
     if (external["ownership"], external["table_role"]) != ("external", "main"):
         raise SystemExit("ccglib materialized-top1 must remain an external main row")
@@ -154,6 +178,11 @@ def main() -> None:
         raise SystemExit(
             "ccglib hierarchical-top1 must remain an external main row"
         )
+    if (external_fourier["ownership"], external_fourier["table_role"]) != (
+        "external",
+        "main",
+    ):
+        raise SystemExit("streamed Fourier top-1 must remain an external main row")
     if (attribution["ownership"], attribution["table_role"]) != (
         "internal_control",
         "attribution_control",
@@ -175,9 +204,9 @@ def main() -> None:
             "**3.880x**",
             "**4.565x**",
             "**1.160x**",
-            "optimistic",
-            "6.584 ms",
-            "FP16 cuFFT is not promoted",
+            "16.498x",
+            "64 MiB",
+            "97.539%/99.679%/100%",
         ),
         "docs/CLAIMS.md": (
             "SYSTEM-EXTERNAL",
@@ -189,11 +218,10 @@ def main() -> None:
             "HIERARCHY-ABLATION",
             "HIERARCHY-ATTRIBUTION",
             "HIER-QUALITY-ROBUST-TOP1",
+            "HIER-MARGIN-COVERAGE",
             "The parent joint-spectrum gate was rejected",
             "HIERARCHY-HEADLINE-REPRO",
-            "FFT-LOWER-BOUND-K512",
-            "FFT-LOWER-BOUND-REPRO",
-            "FFT-SAME-GRID-K512",
+            "FFT-STREAMED-TOP1-K512",
             "HIERARCHY-SECOND-SHAPE",
             "QUALITY-HELDOUT-REAL-LOCAL",
             "QUALITY-HELDOUT-REAL-HIERARCHY",
@@ -206,8 +234,9 @@ def main() -> None:
             "2.14762 / 3.23090 ms",
             "0 / 2,147,483,648 B",
             "Fourier-family lower bound",
-            "0.0521 max-absolute transform error",
-            "58.119x",
+            "16.498x",
+            "64 MiB",
+            "coverage rank of 37",
             "proportional K48 hierarchy fails",
         ),
         "baselines/README.md": (
@@ -243,7 +272,7 @@ def main() -> None:
         "exhaustive internal attribution=1.50462x, hierarchical external=10.83733x, "
         "hierarchical same-algorithm external=3.87988x, "
         "hierarchy ablation=4.56517x, hierarchy sparse attribution=1.16019x, "
-        "workspace=0 B [OK]"
+        "streamed Fourier=16.49824x, workspace=0 B [OK]"
     )
 
 

@@ -20,7 +20,7 @@ class ContractTest(unittest.TestCase):
         manifest = json.loads((ROOT / "artifact/manifest.json").read_text())
         self.assertEqual(
             set(manifest["targets"]),
-            {"smoke", "gpu-smoke", "quality", "robustness", "fft-lower-bound", "system", "hierarchy"},
+            {"smoke", "gpu-smoke", "quality", "robustness", "finite-gpu-quality", "fourier-control", "system", "hierarchy"},
         )
 
     def test_claim_anchors_and_roles(self):
@@ -52,7 +52,15 @@ class ContractTest(unittest.TestCase):
             anchors["quality"]["regular_ula_robustness_hierarchy_top1_min"],
             1.0,
         )
-        self.assertEqual(anchors["system"]["optimistic_cufft_fp32_ms"], 6.58421)
+        self.assertEqual(
+            anchors["quality"]["finite_gpu_complete_dense_exact_top1"],
+            0.9992897727272727,
+        )
+        self.assertEqual(
+            anchors["quality"]["finite_gpu_hierarchy_local_exact_top1"],
+            1.0,
+        )
+        self.assertEqual(anchors["system"]["streamed_cufft_fp32_ms"], 7.768946885)
 
 
 if __name__ == "__main__":

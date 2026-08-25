@@ -24,7 +24,7 @@ REQUIRED_BASELINES = {
     "BEAM24_REP_CUSPARSELT",
     "CCGLIB_MATERIALIZED_TOP1",
     "CCGLIB_HIERARCHICAL_TOP1",
-    "CUFFT_UNIFORM_SPATIAL_FREQUENCY_LOWER_BOUND",
+    "CUFFT_STREAMED_UNIFORM_ANGLE_TOP1",
     "DENSE_FUSED_TOP1_CONTROL",
 }
 VALID_STATES = {"measured", "measured_primitive", "partial", "pending"}
@@ -36,7 +36,7 @@ VALID_OWNERSHIP = {
 
 def main() -> None:
     manifest = json.loads(MANIFEST.read_text())
-    if manifest.get("version") != 4:
+    if manifest.get("version") != 6:
         raise SystemExit("unsupported baseline manifest version")
 
     sources = manifest["external_sources"]
@@ -79,6 +79,7 @@ def main() -> None:
         "CUSPARSELT_PRUNE_COMPLEX",
         "CCGLIB_MATERIALIZED_TOP1",
         "CCGLIB_HIERARCHICAL_TOP1",
+        "CUFFT_STREAMED_UNIFORM_ANGLE_TOP1",
     }:
         raise SystemExit(f"unexpected external main set: {sorted(external_main)}")
     print(

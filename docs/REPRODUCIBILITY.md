@@ -6,10 +6,12 @@
 - `gpu-smoke`: fresh SM120 build, high-entropy K64 correctness, and sanitizer
   admission where Compute Sanitizer is available.
 - `quality`: external real-data screens using checksum-pinned datasets.
-- `robustness`: generated K512 regular-ULA perturbation sweep with three
-  held-out seeds and a per-condition top-1 gate.
-- `fft-lower-bound`: six-process generated-data screen of the optimistic FP32
-  cuFFT path, exhaustive Beam24, and hierarchical Beam24 on SM120.
+- `robustness`: generated K512 regular-ULA perturbation sweep plus a disjoint
+  three-seed top-L margin/coverage audit with admitted and stress rows.
+- `finite-gpu-quality`: 33,792 finite-snapshot K512 trials through the dense
+  GPU oracle, exhaustive Local-F4 GPU, and complete hierarchical Beam24 GPU.
+- `fourier-control`: six-process generated-data comparison of the streamed
+  L4096 uniform-angle cuFFT top-1 control and Beam24 on SM120.
 - `system`: the six-process direction-balanced internal D1/S2 attribution
   campaign. The primary external ccglib comparison is recorded separately.
 - `hierarchy`: the six-process direction-balanced exhaustive-versus-hierarchy
@@ -32,9 +34,16 @@ zero-fills, and the mapped final argmax. Static codebook preparation and Graph
 instantiation are amortized. The separately recorded external comparison uses
 direct launch mode for both hierarchy and ccglib.
 
+The finite-GPU quality row uses batch256 M=N=1024 K512, eleven perturbation
+conditions, three held-out seeds, and four chunks per seed/condition. It is a
+quality campaign rather than a latency comparison; all three routes consume
+identical generated planar FP16 snapshots.
+
 CUDA-event timing is public latency. NCU replay is diagnostic only. The
 reproduce scripts retain every process log and print `[OK >=reference]`,
 `[~within3%]`, or `[LOW]` against the canonical published anchor.
+The Fourier target fails before timing when `nvidia-smi pmon` reports an
+external non-display process; the local lock cannot serialize unrelated jobs.
 
 ## Cold-checkout rule
 

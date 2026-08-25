@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 8,
   "quality": {
     "spib48_vla_mean_map_correlation": 0.99998,
     "spib48_vla_max_peak_shift_deg": 0.25,
@@ -7,11 +7,23 @@
     "regular_ula_robustness_local_max_shift_deg": 0.11730241775512695,
     "regular_ula_robustness_hierarchy_top1_min": 1.0,
     "regular_ula_robustness_local_minus_direct_correlation_min": 0.011231199643591983,
-    "interpolated_fft_spib_mean_map_correlation": 0.99999954,
+    "hierarchy_margin_admitted_top1_recall": 0.9753856169871795,
+    "hierarchy_margin_admitted_top2_recall": 0.9967948717948718,
+    "hierarchy_margin_admitted_top4_recall": 1.0,
+    "hierarchy_margin_admitted_top8_recall": 1.0,
+    "hierarchy_margin_admitted_max_rank": 4,
+    "hierarchy_margin_rule_of_three_upper_95": 0.00007512019230769231,
+    "hierarchy_margin_stress_top8_recall": 0.9993489583333334,
+    "hierarchy_margin_stress_max_rank": 37,
     "heldout_p2701_local_map_correlation": 0.9999654403930244,
     "heldout_a2601_2_local_map_correlation": 0.9983317596376212,
     "heldout_real_local_exact_top1_min": 1.0,
     "heldout_real_hierarchy_exact_top1_min": 0.0
+    ,"finite_gpu_complete_dense_exact_top1": 0.9992897727272727
+    ,"finite_gpu_hierarchy_local_exact_top1": 1.0
+    ,"finite_gpu_complete_dense_within_one": 1.0
+    ,"finite_gpu_max_shift_grid": 1
+    ,"finite_gpu_replay_unstable": 0
   },
   "operator": {
     "sm120_batch256_m1024_n1024_k512_speedup": 1.47097
@@ -23,11 +35,10 @@
     "hierarchical_external_same_algorithm_speedup": 3.87988,
     "hierarchical_exhaustive_ablation_speedup": 4.56517,
     "hierarchical_dense_attribution_speedup": 1.16019,
-    "optimistic_cufft_fp32_ms": 6.58421,
-    "fft_campaign_beam24_exhaustive_ms": 2.15700,
-    "fft_campaign_beam24_hierarchy_ms": 0.470204,
-    "same_grid_cufft_fp32_ms": 27.3012056,
-    "same_grid_cufft_over_beam24": 58.11889705946582,
+    "streamed_cufft_fp32_ms": 7.768946885,
+    "streamed_cufft_beam24_ms": 0.4707686455,
+    "streamed_cufft_over_beam24": 16.49823506915393,
+    "streamed_cufft_workspace_bytes": 67108864,
     "stage1_static_over_basic": 1.4287232206763218,
     "second_shape_external_same_hierarchy_speedup": 2.3864966237043252,
     "second_shape_global_hierarchy_speedup": 3.886019316226,

@@ -15,6 +15,7 @@ class BaselineInventoryTest(unittest.TestCase):
         for baseline_id in (
             "CCGLIB_OPT_STATIC_A",
             "CCGLIB_HIERARCHICAL_TOP1",
+            "CUFFT_STREAMED_UNIFORM_ANGLE_TOP1",
             "DENSE_FUSED_TOP1_CONTROL",
         ):
             self.assertEqual(by_id[baseline_id]["status"], "measured")
@@ -36,9 +37,9 @@ class BaselineInventoryTest(unittest.TestCase):
         self.assertEqual(
             next(
                 item for item in self.manifest["baselines"]
-                if item["id"] == "CUFFT_UNIFORM_SPATIAL_FREQUENCY_LOWER_BOUND"
+                if item["id"] == "CUFFT_STREAMED_UNIFORM_ANGLE_TOP1"
             )["table_role"],
-            "lower_bound",
+            "main",
         )
 
 

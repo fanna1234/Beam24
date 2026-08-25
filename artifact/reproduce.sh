@@ -9,7 +9,7 @@ TARGET=""
 for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=1 ;;
-    smoke|gpu-smoke|quality|robustness|fft-lower-bound|system|hierarchy|all) TARGET="$arg" ;;
+    smoke|gpu-smoke|quality|robustness|finite-gpu-quality|fourier-control|system|hierarchy|all) TARGET="$arg" ;;
     *) echo "unknown argument: $arg" >&2; exit 2 ;;
   esac
 done
@@ -48,9 +48,14 @@ run_robustness() {
   run "$ROOT/artifact/scripts/run_robustness.sh"
 }
 
-run_fft_lower_bound() {
+run_finite_gpu_quality() {
   run "$ROOT/artifact/scripts/check_env.sh" gpu
-  run "$ROOT/artifact/scripts/run_fft_lower_bound.sh"
+  run "$ROOT/artifact/scripts/run_finite_gpu_quality.sh"
+}
+
+run_fourier_control() {
+  run "$ROOT/artifact/scripts/check_env.sh" gpu
+  run "$ROOT/artifact/scripts/run_fourier_control.sh"
 }
 
 run_system() {
@@ -68,8 +73,9 @@ case "$TARGET" in
   gpu-smoke) run_gpu_smoke ;;
   quality) run_quality ;;
   robustness) run_robustness ;;
-  fft-lower-bound) run_fft_lower_bound ;;
+  finite-gpu-quality) run_finite_gpu_quality ;;
+  fourier-control) run_fourier_control ;;
   system) run_system ;;
   hierarchy) run_hierarchy ;;
-  all) run_smoke; run_robustness; run_gpu_smoke; run_fft_lower_bound; run_quality; run_system; run_hierarchy ;;
+  all) run_smoke; run_robustness; run_gpu_smoke; run_finite_gpu_quality; run_fourier_control; run_quality; run_system; run_hierarchy ;;
 esac

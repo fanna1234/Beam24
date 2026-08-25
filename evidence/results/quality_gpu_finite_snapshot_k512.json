@@ -1,0 +1,72 @@
+{
+  "experiment": "beam24_20260825_gpu_finite_snapshot_quality_k512",
+  "state": "measured",
+  "decision": "accepted",
+  "last_verified": "2026-08-25",
+  "contract": {
+    "hardware": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition, SM120a, 188 SMs, 600 W",
+    "driver": "610.43.02",
+    "toolkit": "CUDA 13.2.51",
+    "cublas": "13.3.0.5",
+    "shape": {"batch": 256, "m": 1024, "n": 1024, "k": 512},
+    "precision": "planar complex FP16 input, FP32 dense/sparse accumulation and atomic power",
+    "dense_oracle": "four cuBLAS FP16-input/FP32-output real GEMMs, power reduction, lowest-index argmax",
+    "candidate": "complete Stage-1/top-8/gather/repack/Stage-2/mapped-argmax Beam24 GPU path",
+    "conditions": 11,
+    "seeds": [20260831, 20260901, 20260902],
+    "trials_per_seed_condition": 1024,
+    "trials": 33792,
+    "replays_per_trial": 5
+  },
+  "quality": {
+    "complete_beam24_dense_exact_top1": 0.9992897727272727,
+    "complete_beam24_dense_exact_count": 33768,
+    "complete_beam24_dense_within_one_grid": 1.0,
+    "complete_beam24_dense_within_one_grid_count": 33792,
+    "exhaustive_local_f4_dense_exact_top1": 0.9992897727272727,
+    "hierarchy_exhaustive_local_f4_exact_top1": 1.0,
+    "hierarchy_exhaustive_local_f4_exact_count": 33792,
+    "complete_beam24_dense_exact_wilson95": [
+      0.9989433778753554,
+      0.9995226624247844
+    ],
+    "maximum_dense_shift_grid": 1,
+    "failure_count": 24,
+    "failure_dense_margin_min": 1.89137022e-05,
+    "failure_dense_margin_mean": 0.000934841541525,
+    "failure_dense_margin_max": 0.00191589157,
+    "worst_condition": "phase1",
+    "worst_condition_exact_top1": 0.9986979166666666,
+    "dense_true_doa_mean_deg": 0.029404746304545454,
+    "complete_beam24_true_doa_mean_deg": 0.029405235353030305,
+    "maximum_true_doa_deg": 0.103197898,
+    "replay_unstable": 0,
+    "packed_a_mismatch": 0,
+    "metadata_mismatch": 0,
+    "nonfinite": 0
+  },
+  "sanitizers": {
+    "memcheck": "0 errors on finite-snapshot generator, cuBLAS dense oracle, and complete Beam24 smoke",
+    "initcheck": "0 errors",
+    "racecheck": "0 hazards",
+    "synccheck": "0 errors on finite-snapshot generator and complete Beam24 with dense cuBLAS oracle skipped",
+    "synccheck_cublas_boundary": "cuBLAS returned status 14 after synccheck reported tracked-barrier overflow; retained as a tool/library instrumentation boundary, not a Beam24 pass"
+  },
+  "provenance": {
+    "gpu_uuid": "GPU-c84b488b-ffbc-d9fa-a4fb-4400730fcba4",
+    "quality_source_sha256": "42cefeb495f4805169f68b2c700af44faeeb48cbcfd3cba428514769f0ea413d",
+    "keeper_source_sha256": "29201877fa88c1156aff45be278f0b64b15235b7d725a23e114d7e43cbd07bd5",
+    "quality_binary_sha256": "c2c8780634718352fda8104cc8274aebb678cb5d24ff0247edf9ca08b588c55b",
+    "production_smoke_binary_sha256": "498f747dd408cc658545ff7089dda0a1eb0a1350cb0790688002353123e1ed5e",
+    "artifact_rebuild_quality_binary_sha256": "b792cea5a6a07ffd9cb4338bfe4ce412b0e308ab165af89a8f22f153ca3b7818",
+    "summary_sha256": "01ecb087715f49e462b48ccefcd081e6364734a1f8e3be827c6ea51bef9615c1",
+    "raw_root": "experiments/beam24_20260825_gpu_finite_snapshot_quality_k512/raw"
+  },
+  "counterevidence": {
+    "expected_power_only": false,
+    "full_spectrum": "not evaluated",
+    "general_geometry": "not supported",
+    "k48_real_hierarchy": "separate proportional hierarchy remains rejected"
+  },
+  "allowed_wording": "Across 33,792 finite-snapshot K512 ULA trials on the measured GPU path, complete Beam24 matches dense GPU top-1 in 99.929% of trials; all 24 differences are one grid cell, and the hierarchy adds no miss over exhaustive Local-F4."
+}

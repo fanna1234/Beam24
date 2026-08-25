@@ -50,25 +50,40 @@ system speedups of 9.490x/6.174x/2.367x, and internal attribution ratios of
 must not silently replace or be averaged with the canonical K512 campaigns
 above.
 
-## Fourier-family lower bound (materialized cuFFT control)
+## Fourier-family lower bounds and controls
 
-The target uniform-angle grid is nonuniform in spatial frequency. The measured
-materialized FP32 cuFFT path excludes the interpolation required to recover
-that grid and is therefore an optimistic lower bound for that implementation,
-not a same-output headline baseline. Its
-six-process median is 6.584 ms, versus 2.157 ms for exhaustive Beam24 and
-0.470 ms for hierarchical Beam24. FP16 cuFFT remains rejected because its
-0.0521 max-absolute transform error exceeds the frozen 0.02 gate. Evidence:
-`evidence/results/system_fft_baseline_sm120.json`.
+The maintained bounded-workspace control streams two batches through the same
+L4096 FP32 cuFFT, interpolation, power, and top-1 path. It uses a 64 MiB
+spectrum buffer instead of the full 8 GiB output and measures 7.769 ms versus
+0.4708 ms for Beam24. The paired ratio is 16.498x with 95% CI
+[16.484, 16.512] and 6/6 wins. A direct cuFINUFFT 2.6 type-2 implementation
+passes the 481-angle gate only at `eps=1e-6` but takes 1.633 s, so it is retained
+as a rejected implementation. Neither result is a universal lower bound for
+specialized NUFFT or CZT systems. Evidence:
+`evidence/results/system_fourier_streamed_top1_sm120.json`.
 
-The stricter same-grid implementation uses a 4096-point FP32 cuFFT, linear
-complex interpolation to the 1024 uniform-angle beams, and direct power/top-1.
-It passes the declared ideal-angle quality screen and takes 27.301 ms, or
-58.119x the 0.470 ms Beam24 path. This closes that materialized implementation;
-it is not a lower bound for pruned NUFFT, CZT, or a non-materialized Fourier
-mechanism. Evidence: `evidence/results/system_fourier_uniform_angle_sm120.json`.
+Superseded materialized and interpolation-free controls remain traceable in
+[`HISTORICAL_FOURIER_CONTROLS.md`](HISTORICAL_FOURIER_CONTROLS.md); they are not
+active denominators.
 
 ## New replication and negative boundaries
+
+The finite-snapshot GPU quality campaign executes the actual FP16-input,
+FP32-accumulation/atomic-power, complete K512 hierarchy on 33,792 trials across
+the frozen eleven-condition envelope. Complete Beam24 matches dense GPU top-1
+in 99.929% of trials; all 24 differences are one grid cell. Exhaustive Local-F4
+has the same 24 differences and the hierarchy adds none. This replaces the
+expected-power result as the paper headline while preserving the older oracle
+as independent evidence. Evidence:
+`evidence/results/quality_gpu_finite_snapshot_k512.json`.
+
+A disjoint hierarchy audit spans 39,936 admitted K512 trials and 6,144
+close-source stress trials. Admitted recall is 97.539%/99.679%/100% at
+top-1/top-2/top-4; fixed top-8 preserves 100% recall while matching the 128-row
+Stage-2 tile. Close coherent stress contains two top-8 misses and a maximum
+coverage rank of 37. This supports hardware-aligned slack inside the admitted
+envelope, not an arbitrary-signal guarantee. Evidence:
+`evidence/results/quality_hierarchy_margin_coverage_heldout.json`.
 
 At batch64 M1024 N512 K512 on the same SM120a GPU, the external
 identical-hierarchy, global-hierarchy, and local-sparse gains remain 2.386x,
@@ -103,9 +118,13 @@ Evidence: `evidence/results/quality_spib48_heldout_sessions.json`.
   both paths use the same hierarchy.
 - Hierarchy quality wording is limited to top-1 on the admitted regular-array
   screens; it does not imply top-k recovery or general-array support.
-- cuFFT wording must say `optimistic materialized lower bound`, disclose that
-  uniform-angle interpolation is excluded, and retain the FP16 rejection.
-- Same-grid cuFFT wording must identify the evaluated materialized
-  implementation and must not claim a general Fourier lower bound.
+- Margin/coverage wording must report both the admitted top-4 saturation and
+  the close coherent top-8 counterexample; top-8 is hardware-aligned slack, not
+  a universal recall certificate.
+- Streamed cuFFT wording must report its 64 MiB bounded spectrum buffer and
+  must not be rewritten as a universal NUFFT/CZT lower bound.
 - Held-out K48 data support Local-F4 only; they are counterevidence for a
   scale-free global hierarchy.
+- Finite-snapshot K512 GPU wording must report 99.929% dense exact agreement,
+  one-grid maximum shift, and zero hierarchy-added misses; it does not imply
+  full-spectrum, top-k, cross-K, cross-GPU, or general-array equivalence.

@@ -1,0 +1,49 @@
+{
+  "experiment": "beam24_20260825_streamed_cufft_top1_sm120",
+  "state": "measured",
+  "last_verified": "2026-08-25",
+  "contract": {
+    "hardware": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition, SM120a",
+    "driver": "610.43.02",
+    "cuda": "13.2.51",
+    "shape": "batch256 M=N=1024 K512",
+    "input": "device-resident planar complex FP16",
+    "accumulation": "FP32 FFT, interpolation, and power",
+    "output": "one FP32 maximum power and one uniform-angle beam index per batch",
+    "fft_length": 4096,
+    "chunk_batches": 2,
+    "timing": "direct launch, CUDA events, 20 warmups, 100 iterations, six direction-balanced processes"
+  },
+  "quality": {
+    "random_b1_n16_dense_top1": "exact",
+    "random_b1_n16_spectrum_correlation": 0.999928149,
+    "plane_wave_angles": 481,
+    "plane_wave_exact_top1": 1.0,
+    "memcheck_errors": 0
+  },
+  "workspace": {
+    "streamed_spectrum_bytes": 67108864,
+    "full_spectrum_bytes": 8589934592,
+    "materializes_full_output": false
+  },
+  "performance": {
+    "streamed_cufft_median_ms": 7.768946885,
+    "beam24_median_ms": 0.4707686455,
+    "paired_geomean_cufft_over_beam24": 16.49823506915393,
+    "paired_bootstrap_95ci": [16.483731442552518, 16.51174444050106],
+    "beam24_process_wins": 6,
+    "processes": 6
+  },
+  "provenance": {
+    "streamed_source_sha256": "04cb842b6c46ef31d51fe8f3d5d818d2d694ba07c49adb8d9e32bb39df914948",
+    "streamed_common_header_sha256": "0d64dc15b95ebb41c096fe3acbee63e668cf1ea0540a4e5dba69b4be07b97247",
+    "streamed_binary_sha256": "0a4126ea36dd72926cf21a091d27c2dba83aadf3802b5b4e890e90a877daee84",
+    "beam24_binary_sha256": "72ee08e6535d58f0e4e0e401e63fee1e3d8358c918ac711bf395f43d301f5514",
+    "raw_root": "experiments/beam24_20260825_streamed_cufft_top1_sm120/raw"
+  },
+  "decision": {
+    "implementation": "accepted strongest measured bounded-workspace Fourier control",
+    "boundary": "not a proof against all specialized NUFFT or CZT implementations",
+    "allowed_wording": "A quality-passing L4096 FP32 cuFFT control streams two batches through uniform-angle interpolation and the same power/top-1 consumer using 64 MiB; it takes 7.769 ms, 16.498x the Beam24 latency."
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "experiment": "beam24_20260825_hierarchy_margin_coverage_heldout",
+  "state": "measured",
+  "last_verified": "2026-08-25",
+  "contract": {
+    "geometry": "nominal half-wavelength K512 ULA",
+    "beams": 1024,
+    "stage1_sensors": 128,
+    "stage1_beams": 128,
+    "top_l": [1, 2, 4, 8, 16, 32],
+    "seeds": [20260828, 20260829, 20260830],
+    "trials_per_condition_per_seed": 1024,
+    "admitted_conditions": 13,
+    "stress_conditions": 2,
+    "total_trials": 46080,
+    "oracle": "exhaustive Local-F4 Beam24 winner"
+  },
+  "admitted": {
+    "trials": 39936,
+    "coverage_rank_max": 4,
+    "coverage_rank_p99": 2.0,
+    "recall": {
+      "top1": 0.9753856169871795,
+      "top2": 0.9967948717948718,
+      "top4": 1.0,
+      "top8": 1.0
+    },
+    "work_ratio": {
+      "top1": 0.046875,
+      "top2": 0.0625,
+      "top4": 0.09375,
+      "top8": 0.15625
+    },
+    "top8_misses": 0,
+    "rule_of_three_miss_rate_upper_95": 0.00007512019230769231
+  },
+  "stress": {
+    "trials": 6144,
+    "close_incoherent_top8_recall": 1.0,
+    "close_coherent_trials": 3072,
+    "close_coherent_top4_recall": 0.994140625,
+    "close_coherent_top8_recall": 0.9993489583333334,
+    "close_coherent_top16_recall": 0.9996744791666666,
+    "close_coherent_coverage_rank_max": 37
+  },
+  "provenance": {
+    "git_commit": "73910ca364afc9efc832b27a2312c4aea5d75586",
+    "maintained_source_sha256": "075e91f6ac83a18c07d8fe2cb27f42e8ffa29febd6eeb0e49ce9c47185694b3b",
+    "base_source_sha256": "a0d1932c8ebdea7a89c5da905a09432e8e6d863d4f71ed8540fd9f95462e0348",
+    "summary_sha256": "eb90dea81bd4b0b302165b3d597da44a8863e97e042a562aa454b0adbe3703ba",
+    "raw_root": "experiments/beam24_20260825_hierarchy_margin_coverage_heldout/raw/maintained"
+  },
+  "decision": {
+    "implementation": "accepted held-out CPU hierarchy audit",
+    "mechanism": "fixed top-8 covers the admitted envelope but has no arbitrary-signal guarantee",
+    "thesis_impact": "top-4 saturates admitted recall; top-8 is hardware-aligned safety slack",
+    "allowed_wording": "Across 39,936 independent admitted K512 trials, every exhaustive Local-F4 winner lies within the first four Stage-1 sectors; fixed top-8 adds a hardware-aligned safety budget. Two misses in 3,072 close coherent stress trials rule out an arbitrary-signal recall guarantee.",
+    "boundary": "synthetic K512 ULA top-1; no real-array, top-k, arbitrary-signal, or general-geometry guarantee"
+  }
+}
