@@ -1,0 +1,164 @@
+{
+  "experiment": "beam24_20260823_hierarchical_integrated_batch256_k512",
+  "state": "measured",
+  "last_verified": "2026-08-24",
+  "contract": {
+    "hardware": {
+      "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+      "compute_capability": "12.0",
+      "sms": 188,
+      "driver": "610.43.02",
+      "power_limit_w": 600
+    },
+    "software": {
+      "cuda": "13.2.51",
+      "target": "sm_120a",
+      "ccglib_commit": "756cc1436136387087d9f5f4778c90f347658cd0"
+    },
+    "shape": {
+      "batch": 256,
+      "m": 1024,
+      "n": 1024,
+      "k": 512
+    },
+    "precision": "planar complex FP16 input and FP32 accumulation/power",
+    "output": "one FP32 maximum power and one full-grid beam index per batch",
+    "hierarchy": {
+      "stage1_sensors": 128,
+      "coarse_beams": 128,
+      "top_sectors": 8,
+      "refinement_slots_per_sector": 16,
+      "stage2_padded_beams": 128
+    },
+    "timing": {
+      "warmup": 20,
+      "iterations": 100,
+      "processes": 6,
+      "gpu_lock": "/tmp/beam24_gpu_campaign.lock",
+      "inputs": "device resident",
+      "static_weight_preparation": "amortized"
+    }
+  },
+  "quality": {
+    "ideal_ula_single_source": {
+      "source_angles": 481,
+      "top1_agreement": 1.0,
+      "max_extra_shift_deg": 0.0
+    },
+    "spib48_regular_vla": {
+      "recordings": 10,
+      "top1_agreement": 1.0,
+      "max_extra_shift_deg": 0.0
+    },
+    "synthetic_ula_multisource": {
+      "incoherent_trials": 2000,
+      "coherent_64_snapshot_trials": 500,
+      "source_count": [2, 3],
+      "top1_agreement": 1.0,
+      "max_extra_shift_deg": 0.0
+    },
+    "boundary": "top-1 on regularly sampled line arrays; this does not establish top-k recovery or general-array support"
+  },
+  "gpu_correctness": {
+    "regular_ula_batches": 481,
+    "winner_missing": 0,
+    "index_mismatch": 0,
+    "max_relative_power": 1.72514362e-7,
+    "packed_a_mismatch": 0,
+    "metadata_mismatch": 0,
+    "graph_pointer_pad_mib": [0, 1, 3, 7, 15],
+    "graph_replays_per_pad": 1000,
+    "memcheck_errors": 0,
+    "initcheck_errors": 0,
+    "synccheck_errors": 0,
+    "racecheck_hazards": 0
+  },
+  "performance": {
+    "external_ccglib_same_hierarchy_direct": {
+      "role": "primary external same-algorithm comparison",
+      "baseline_median_ms": 1.821947215,
+      "beam24_hierarchy_median_ms": 0.4695961625,
+      "marginal_median_speedup": 3.879817086452447,
+      "paired_geomean_speedup": 3.879884423891296,
+      "paired_bootstrap_95ci": [3.8793252821725708, 3.880647105994889],
+      "process_wins": 6,
+      "processes": 6,
+      "launch_mode": "direct for both paths",
+      "boundary": "same hierarchy; external path materializes complex outputs and includes dynamic input/A gathers"
+    },
+    "external_ccglib_materialized_top1_direct": {
+      "role": "primary external end-to-end comparison",
+      "baseline_median_ms": 5.09019303,
+      "beam24_hierarchy_median_ms": 0.469561443,
+      "marginal_median_speedup": 10.840313032260614,
+      "paired_geomean_speedup": 10.837329835068067,
+      "paired_bootstrap_95ci": [10.82927653046488, 10.843257347345471],
+      "process_wins": 6,
+      "processes": 6,
+      "launch_mode": "direct for both paths",
+      "boundary": "includes hierarchy work reduction, sparse execution, and avoidance of materialized complex output"
+    },
+    "exhaustive_beam24_ablation": {
+      "role": "internal algorithmic ablation",
+      "baseline_median_ms": 2.143919705,
+      "beam24_hierarchy_median_ms": 0.469649449,
+      "marginal_median_speedup": 4.564936059362863,
+      "paired_geomean_speedup": 4.5651685823479085,
+      "paired_bootstrap_95ci": [4.561381074275955, 4.569407611398505],
+      "process_wins": 6,
+      "processes": 6,
+      "launch_mode": "CUDA Graph for both paths"
+    },
+    "dense_fused_same_hierarchy_attribution": {
+      "role": "internal sparse-executor attribution control",
+      "baseline_median_ms": 0.5447662475,
+      "beam24_hierarchy_median_ms": 0.4694343955,
+      "marginal_median_speedup": 1.1604736523828068,
+      "paired_geomean_speedup": 1.1601900473262734,
+      "paired_bootstrap_95ci": [1.159146649839812, 1.16128521219695],
+      "process_wins": 6,
+      "processes": 6,
+      "launch_mode": "CUDA Graph for both paths"
+    }
+  },
+  "mechanism": {
+    "exhaustive_hmma_instructions": 134217728,
+    "stage1_hmma_instructions": 4194304,
+    "stage2_hmma_instructions": 16777216,
+    "hierarchical_over_exhaustive_hmma_ratio": 0.15625,
+    "ncu_stage1_duration_us": 101.79,
+    "ncu_stage2_duration_us": 366.21,
+    "nsys_median_auxiliary_us": {
+      "top8_and_candidate_build": 4.162,
+      "packed_a_gather": 9.1565,
+      "metadata_repack": 1.953,
+      "mapped_argmax": 1.52
+    },
+    "dynamic_workspace_bytes": 36056064,
+    "dense_same_hierarchy_workspace_bytes": 67513344,
+    "new_kernel_resources": {
+      "maximum_registers_per_thread": 32,
+      "stack_bytes": 0,
+      "local_bytes": 0,
+      "spill_stores": 0,
+      "spill_loads": 0
+    }
+  },
+  "dispatch": {
+    "batch_times_snapshots_below_3072": "exhaustive Beam24",
+    "batch_times_snapshots_at_least_3072": "hierarchical Beam24",
+    "measured_snapshot_counts": [128, 256, 512, 1024],
+    "crossover_controls": {
+      "work_2048_speedups": [0.7052, 0.6661, 0.6662, 0.6662],
+      "work_3072_speedups": [1.2102, 1.2849, 1.2092, 1.2035]
+    },
+    "boundary": "the crossover is measured only for the SM120a M1024 K512 route"
+  },
+  "provenance": {
+    "base_commit": "d71c5f1",
+    "hierarchical_source_sha256": "7b25020e627cb79f7109ab3f4785fe0e681827f63f908994b69b54839210c69f",
+    "exhaustive_source_sha256": "29201877fa88c1156aff45be278f0b64b15235b7d725a23e114d7e43cbd07bd5",
+    "keeper_binary_sha256": "c19389180392c3d5c6145edf143c7028c9342c179b22ee2a65b28cf666adc646",
+    "raw_root": "experiments/beam24_20260823_hierarchical_integrated_batch256_k512/raw"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "experiment": "beam24_20260823_external_baseline_dataset_matrix/beam24_rep_cusparselt_backend_campaign_001",
+  "state": "partial",
+  "hardware": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition, SM120",
+  "software": {"cuda": "13.2", "cusparselt": "0.9.1.1"},
+  "contract": {
+    "batch": 256,
+    "m": 1024,
+    "n": 1024,
+    "k": [64, 128, 512],
+    "input": "planar complex FP16",
+    "intermediate": "FP16 cuSPARSELt C/D",
+    "public_output": "planar complex FP32",
+    "dynamic_work": "normalized F4, four sparse GEMMs, FP32 promotion",
+    "timing": "20 warmups, 100 iterations, six direction-balanced processes"
+  },
+  "provenance": {
+    "paired_timing_source_sha256": "b4ddcffd88d81bca21bfd9c0446510e94ba14b84c489c3b1d0dd925063c13ea2",
+    "paired_timing_binary_sha256": "c040cf0dc0b06d9a25ea77999aadce67d868a5109d25090602b48afad36f0978",
+    "current_source_sha256": "16d42e9f31501d13c7d6fefcf899e75090cb5b5bccd2a3a3fa9996eabdd2d8cd",
+    "current_binary_sha256": "97aa0b13401f818d5ee0d8a34f7e17de3c2517f2c2202ae57d723579af4ad6a8",
+    "semantic_delta": "filename and JSON record labels only; current source re-passed bounded correctness and memcheck"
+  },
+  "correctness": {
+    "f4_max_abs_diff": 0.0,
+    "bounded_complex_max_abs_diff": 0.0138626099,
+    "bad_values": 0,
+    "memcheck_errors": 0
+  },
+  "shapes": {
+    "64": {
+      "ccglib_median_ms": 2.05165851,
+      "backend_median_ms": 5.716998575,
+      "ccglib_over_backend_paired_geomean": 0.3337136865406814,
+      "exact_bootstrap_95ci": [0.3074354901192477, 0.3667201932778989],
+      "backend_process_wins": 0
+    },
+    "128": {
+      "ccglib_median_ms": 2.62776768,
+      "backend_median_ms": 6.332617044999999,
+      "ccglib_over_backend_paired_geomean": 0.419466109765939,
+      "exact_bootstrap_95ci": [0.38204807636220356, 0.46259346626410325],
+      "backend_process_wins": 0
+    },
+    "512": {
+      "ccglib_median_ms": 4.81357932,
+      "backend_median_ms": 8.69676161,
+      "ccglib_over_backend_paired_geomean": 0.574206555270882,
+      "exact_bootstrap_95ci": [0.554474778339284, 0.5955919253491204],
+      "backend_process_wins": 0
+    }
+  },
+  "claim_boundary": "hybrid backend timing is measured; actual-dataset quality and direct Beam24/backend paired timing remain pending"
+}

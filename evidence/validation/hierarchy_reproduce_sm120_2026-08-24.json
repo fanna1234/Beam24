@@ -1,0 +1,43 @@
+{
+  "purpose": "fresh maintained-entrypoint validation; not a replacement reference result",
+  "date": "2026-08-24",
+  "hardware": {
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "compute_capability": "12.0",
+    "driver": "610.43.02"
+  },
+  "software": {
+    "cuda": "13.2.51",
+    "architecture": "sm_120a"
+  },
+  "build": {
+    "fresh_cmake_configure": "passed",
+    "hierarchical_source_sha256": "7b25020e627cb79f7109ab3f4785fe0e681827f63f908994b69b54839210c69f",
+    "exhaustive_source_sha256": "29201877fa88c1156aff45be278f0b64b15235b7d725a23e114d7e43cbd07bd5",
+    "hierarchy_binary_sha256": "79e24a57af978b3178601803c077a763d8b49c01a1dd89b866d62166935740fc",
+    "exhaustive_binary_sha256": "b31f9c022dc843c477fda965576fc8d18773a350b56d8a7091973e4f76be7613"
+  },
+  "hierarchy_campaign": {
+    "shape": {
+      "batch": 256,
+      "m": 1024,
+      "n": 1024,
+      "k": 512
+    },
+    "process_ratios": [
+      4.535701489064134,
+      4.545629636961478,
+      4.546289093939882,
+      4.551541109413621,
+      4.552317085578212,
+      4.551162073808646
+    ],
+    "process_wins": 6,
+    "paired_geomean_speedup": 4.547103149459741,
+    "reference_anchor": 4.56517,
+    "status": "within_3_percent",
+    "exhaustive_median_ms": 2.13567579,
+    "hierarchy_median_ms": 0.46943745000000003
+  },
+  "raw_evidence": "experiments/beam24_20260823_hierarchical_integrated_batch256_k512/raw/remote/artifact_hierarchy_reproduce_002"
+}

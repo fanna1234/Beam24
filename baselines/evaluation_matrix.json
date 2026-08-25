@@ -1,0 +1,103 @@
+{
+  "version": 2,
+  "policy": {
+    "main_tables": "external baselines plus Beam24 only",
+    "hybrid_paths": "backend ablation only",
+    "internal_variants": "mechanism ablation only",
+    "performance_reuse": "datasets sharing a physical K profile reuse one timing campaign; quality remains dataset-specific",
+    "missing_cells": "every selected cell must be measured, planned, rejected, or not_applicable"
+  },
+  "datasets": [
+    {
+      "id": "SYNTHETIC_REGULAR",
+      "kind": "generated",
+      "geometry": "regular line array",
+      "quality_scope": "K={48,64,128,512}; look-angle and dense-response sweep",
+      "performance_profiles": ["K64", "K128", "K512"]
+    },
+    {
+      "id": "SPIB48",
+      "kind": "real recordings",
+      "geometry": "48-sensor vertical line array",
+      "logical_k": 48,
+      "performance_profiles": ["K64"],
+      "padding": "16 zero sensors"
+    },
+    {
+      "id": "ACOU64",
+      "kind": "synthetic acoustic waveform",
+      "geometry": "64-channel planar array",
+      "logical_k": 64,
+      "performance_profiles": ["K64"]
+    },
+    {
+      "id": "LOCATA32",
+      "kind": "real reverberant recordings",
+      "geometry": "32-channel spherical Eigenmike",
+      "logical_k": 32,
+      "performance_profiles": ["K64"],
+      "padding": "32 zero sensors",
+      "role": "negative geometry boundary"
+    }
+  ],
+  "main_rows": {
+    "quality": ["DENSE_REFERENCE", "CUSPARSELT_PRUNE_COMPLEX", "BEAM24"],
+    "operator": ["CCGLIB_BEST", "CUBLASLT_COMPLEX_4GEMM", "CUSPARSELT_PRUNE_COMPLEX", "BEAM24"],
+    "system": ["CCGLIB_MATERIALIZED_TOP1", "CCGLIB_HIERARCHICAL_TOP1", "BEAM24"]
+  },
+  "row_bindings": {
+    "DENSE_REFERENCE": "DENSE_REFERENCE",
+    "CCGLIB_BEST": "best_of:CCGLIB_BASIC,CCGLIB_OPT_STATIC_A,CCGLIB_FULL_PIPELINE",
+    "CUBLASLT_COMPLEX_4GEMM": "CUBLASLT_COMPLEX_4GEMM",
+    "CUSPARSELT_PRUNE_COMPLEX": "CUSPARSELT_PRUNE_COMPLEX",
+    "CCGLIB_MATERIALIZED_TOP1": "CCGLIB_MATERIALIZED_TOP1",
+    "CCGLIB_HIERARCHICAL_TOP1": "CCGLIB_HIERARCHICAL_TOP1",
+    "BEAM24": "candidate"
+  },
+  "quality_cells": {
+    "SYNTHETIC_REGULAR": {"DENSE_REFERENCE": "measured", "CUSPARSELT_PRUNE_COMPLEX": "measured", "BEAM24": "measured"},
+    "SPIB48": {"DENSE_REFERENCE": "measured", "CUSPARSELT_PRUNE_COMPLEX": "measured", "BEAM24": "measured"},
+    "ACOU64": {"DENSE_REFERENCE": "measured", "CUSPARSELT_PRUNE_COMPLEX": "measured", "BEAM24": "measured"},
+    "LOCATA32": {"DENSE_REFERENCE": "measured", "CUSPARSELT_PRUNE_COMPLEX": "measured", "BEAM24": "rejected_geometry"}
+  },
+  "operator_profiles": {
+    "K64": {"CCGLIB_BEST": "measured", "CUBLASLT_COMPLEX_4GEMM": "measured", "CUSPARSELT_PRUNE_COMPLEX": "measured", "BEAM24": "measured"},
+    "K128": {"CCGLIB_BEST": "measured", "CUBLASLT_COMPLEX_4GEMM": "measured", "CUSPARSELT_PRUNE_COMPLEX": "measured", "BEAM24": "measured"},
+    "K512": {"CCGLIB_BEST": "measured", "CUBLASLT_COMPLEX_4GEMM": "measured", "CUSPARSELT_PRUNE_COMPLEX": "measured", "BEAM24": "measured"}
+  },
+  "system_profiles": {
+    "K64": {"CCGLIB_MATERIALIZED_TOP1": "measured", "CCGLIB_HIERARCHICAL_TOP1": "not_applicable", "BEAM24": "measured"},
+    "K128": {"CCGLIB_MATERIALIZED_TOP1": "measured", "CCGLIB_HIERARCHICAL_TOP1": "not_applicable", "BEAM24": "measured"},
+    "K512": {"CCGLIB_MATERIALIZED_TOP1": "measured", "CCGLIB_HIERARCHICAL_TOP1": "measured", "BEAM24": "measured"}
+  },
+  "hybrid_backend_ablation": {
+    "name": "Beam24 representation with cuSPARSELt backend",
+    "binding": "BEAM24_REP_CUSPARSELT",
+    "profiles": {"K64": "measured", "K128": "measured", "K512": "measured"},
+    "quality": "not_required: representation quality is shared with Beam24; this row isolates backend execution"
+  },
+  "internal_ablation_rows": [
+    "dense reference",
+    "direct antenna-domain joint-complex 2:4",
+    "add local F4",
+    "joint versus independent real/imaginary support",
+    "magnitude versus response-aware support",
+    "cuSPARSELt backend versus custom fused sparse backend",
+    "separate versus accumulator-resident power reduction",
+    "dense fused same-output attribution control"
+  ],
+  "external_related_rows": {
+    "Sparse Array Beamformer Design via ADMM": "not_applicable_without_covariance_and_SINR_contract",
+    "Sparse Array Beampattern Synthesis via ADMM": "not_applicable_without_target_beampattern_contract",
+    "DFT beamspace dimension reduction": "not_applicable_to_full_output_dimension_contract"
+  },
+  "final_test_suite": {
+    "quality_main": "3 rows x 4 dataset families",
+    "operator_main": "4 rows x 3 physical-K profiles",
+    "system_main": "standard external exhaustive rows across K64/K128/K512 plus a same-hierarchy external K512 row",
+    "representation_ablation": "direct 2:4 -> local F4 -> joint support -> response-aware support",
+    "backend_ablation": "Beam24 representation + cuSPARSELt versus full Beam24",
+    "fusion_ablation": "materialized output -> separate power -> accumulator-resident power/top1",
+    "microarchitecture": "native sparse instruction, resource, and same-run timeline attribution"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "experiment": "beam24_20260824_postreview_fourier_exact_k512",
+  "state": "measured",
+  "contract": {
+    "hardware": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition, SM120a",
+    "driver": "610.43.02",
+    "cuda": "13.2.51",
+    "shape": "batch256 M=N=1024 K512",
+    "input": "device-resident planar complex FP16",
+    "fft": "4096-point FP32 cuFFT with linear complex interpolation to 1024 uniform-angle beams",
+    "consumer": "direct power accumulation and deterministic top-1; no interpolated complex output",
+    "timing": "CUDA events, 20 warmups, 100 iterations, six paired F/H processes"
+  },
+  "quality": {
+    "plane_wave_source_angles": 481,
+    "minimum_passing_fft_length": 4096,
+    "exact_top1": 1.0,
+    "within_one_grid": 1.0,
+    "minimum_spectrum_correlation": 0.9997214360375959,
+    "random_b1_n16_top1_shift": 0,
+    "random_b1_n16_spectrum_correlation": 0.999928149,
+    "memcheck_errors": 0
+  },
+  "performance": {
+    "cufft_uniform_angle_median_ms": 27.3012056,
+    "beam24_hierarchy_median_ms": 0.4698256105,
+    "paired_geomean_cufft_over_beam24": 58.11889705946582,
+    "paired_bootstrap_95ci": [58.08256579866854, 58.14829852895536],
+    "beam24_wins": 6,
+    "processes": 6
+  },
+  "provenance": {
+    "candidate_source_sha256": "2cfcb16bd4722baf007cff38ed346b402a2fb70696437e1fdbca857a4c6800bf",
+    "candidate_binary_sha256": "50ceeca43c7860cf51bb330fa6d8b52b2e85d8b2e4935d3cf0c7d080f860c84e",
+    "beam24_binary_sha256": "72ee08e6535d58f0e4e0e401e63fee1e3d8358c918ac711bf395f43d301f5514",
+    "raw_root": "experiments/beam24_20260824_postreview_fourier_exact_k512/raw"
+  },
+  "decision": {
+    "implementation": "accepted same-grid materialized Fourier comparator",
+    "thesis_impact": "closes uniform-angle interpolation and direct power/top1 for materialized FP32 cuFFT",
+    "boundary": "does not establish a lower bound for pruned NUFFT, CZT, or non-materialized Fourier mechanisms",
+    "allowed_wording": "A same-grid 4096-point FP32 cuFFT comparator with uniform-angle interpolation and direct power/top-1 takes 27.301 ms, versus 0.470 ms for Beam24."
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "aggregates": {
+    "changed_groups": {
+      "max": 3.0,
+      "mean": 2.658713692946058,
+      "median": 3.0,
+      "min": 1.0,
+      "p05": 1.0,
+      "p95": 3.0
+    },
+    "hpbw_ratio": {
+      "max": 1.1274519272439052,
+      "mean": 1.0067312812740492,
+      "median": 0.9923861827495304,
+      "min": 0.9703034923463045,
+      "p05": 0.9736085664569795,
+      "p95": 1.0824718112933733
+    },
+    "magnitude_nmse": {
+      "max": 0.2500714236511692,
+      "mean": 0.1389745115541466,
+      "median": 0.14457816257623116,
+      "min": 0.016368068140999194,
+      "p05": 0.04913133920540325,
+      "p95": 0.22332935999036663
+    },
+    "psll_delta_db": {
+      "max": 2.9384557273627276,
+      "mean": 0.18646024184445587,
+      "median": 0.8034016989786004,
+      "min": -3.4767650204234872,
+      "p05": -3.2837989857748764,
+      "p95": 2.739060377469893
+    },
+    "retained_weight_energy": {
+      "max": 0.9765625,
+      "mean": 0.8522065824065479,
+      "median": 0.845105658646046,
+      "min": 0.7946284553493567,
+      "p05": 0.7969273609168325,
+      "p95": 0.9532486507168512
+    },
+    "snr_loss_db": {
+      "max": -0.1029995663981052,
+      "mean": -0.7010132290389742,
+      "median": -0.7308899114803769,
+      "min": -0.9983588707837092,
+      "p05": -0.9858126228101812,
+      "p95": -0.2079412825709183
+    },
+    "snr_ratio": {
+      "max": 0.9765625000000032,
+      "mean": 0.8522065824065477,
+      "median": 0.8451056586460459,
+      "min": 0.7946284553493562,
+      "p05": 0.7969273609168326,
+      "p95": 0.9532486507168509
+    }
+  },
+  "contract": {
+    "K": [
+      48,
+      64,
+      128,
+      512
+    ],
+    "look_grid_deg": {
+      "count": 241,
+      "max": 60.0,
+      "min": -60.0,
+      "step": 0.5
+    },
+    "max_substitutions": 3,
+    "minimum_snr_loss_db": -1.0,
+    "promotion_target": {
+      "max_psll_delta_db": 2.0,
+      "mean_snr_loss_db": -0.5,
+      "worst_snr_loss_db": -1.0
+    },
+    "quality_stop": {
+      "max_psll_delta_db": 3.0,
+      "worst_snr_loss_db": -1.0
+    },
+    "response_grid_deg": {
+      "count": 7201,
+      "max": 90.0,
+      "min": -90.0,
+      "step": 0.025
+    }
+  },
+  "decision": {
+    "ideal_ula_promotion_target_pass": false,
+    "mechanism_status": "advance_to_nonideal_quality_and_gpu_screen",
+    "evidence_scope": "synthetic_only",
+    "quality_stop_pass": true
+  },
+  "environment": {
+    "numpy": "2.4.6",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 21.0.0 (clang-2100.0.123.102)]",
+    "source_sha256": "3481c050b3e17a9e6ea3ed8ea886409a266c2088a6f299d8b49999c85090f720",
+    "timestamp_utc": "2026-08-22T16:09:34.105058+00:00"
+  },
+  "experiment_id": "beam24_20260822_localdft24_ula_tcbf/quality_ula_v4_greedy_dither2",
+  "input_scope": "synthetic ideal half-wavelength ULA steering vectors",
+  "mechanism": "two-step greedy group-mask substitution under an exact joint-complex local-DFT 2:4 contract",
+  "state": "partial"
+}

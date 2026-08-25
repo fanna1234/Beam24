@@ -1,0 +1,22 @@
+{
+  "external_system": {
+    "experiment": "beam24_20260823_external_baseline_dataset_matrix/external_system_matrix_001",
+    "contract": "same final max-power and beam-index output",
+    "shapes": {
+      "64": {"ccglib_median_ms": 3.02252233, "beam24_median_ms": 0.31850543649999996, "paired_speedup": 9.489955544184308, "ci95": [9.483144917706467, 9.49634434640013], "wins": 6},
+      "128": {"ccglib_median_ms": 3.30907142, "beam24_median_ms": 0.5359883304999999, "paired_speedup": 6.173547926559048, "ci95": [6.170032833470127, 6.176983366755204], "wins": 6},
+      "512": {"ccglib_median_ms": 5.113155604999999, "beam24_median_ms": 2.161200645, "paired_speedup": 2.3666631961301055, "ci95": [2.3656705815901606, 2.367746994695743], "wins": 6}
+    },
+    "boundary": "includes generic benefit from avoiding materialized complex output"
+  },
+  "dense_fused_attribution": {
+    "experiment": "beam24_20260823_external_baseline_dataset_matrix/dense_attribution_matrix_001",
+    "contract": "same fused power/top1 output for dense and Beam24",
+    "shapes": {
+      "64": {"dense_median_ms": 0.5157265664999999, "beam24_median_ms": 0.316246077, "paired_speedup": 1.6302288696085216, "ci95": [1.6246194034210544, 1.635506760898609], "wins": 6},
+      "128": {"dense_median_ms": 0.851537913, "beam24_median_ms": 0.5327912269999999, "paired_speedup": 1.5931471407775333, "ci95": [1.5816485890332317, 1.5998058379363367], "wins": 6},
+      "512": {"dense_median_ms": 3.2272783499999997, "beam24_median_ms": 2.14424801, "paired_speedup": 1.5049177208882443, "ci95": [1.5038600591227977, 1.5058680408698928], "wins": 6}
+    },
+    "role": "internal attribution control, not an external baseline"
+  }
+}

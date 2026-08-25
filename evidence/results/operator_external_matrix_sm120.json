@@ -1,0 +1,37 @@
+{
+  "experiment": "beam24_20260823_external_baseline_dataset_matrix/external_operator_matrix_001",
+  "state": "measured",
+  "contract": "RTX PRO 6000 SM120; batch256 M=N=1024; K={64,128,512}; complex FP16 input; FP32 public output; 20 warmups; 100 iterations; six processes",
+  "cusparselt_prune": {
+    "algorithm": "CUSPARSELT_PRUNE_SPMMA_STRIP",
+    "source_sha256": "4b99a15730dce2928d511708aec927743db1b17169ba25bd61ae9b2ba88a3e13",
+    "binary_sha256": "27c91c83a483dc638f700ef29133b0cb8f06fa8041b4f945d2f767b7ae2d93ef",
+    "memcheck_errors": 0
+  },
+  "shapes": {
+    "64": {
+      "median_ms": {"ccglib": 1.692483065, "cublaslt": 4.56332016, "cusparselt_prune": 4.587484125, "beam24": 1.52942121},
+      "external_over_beam24": {
+        "ccglib": {"paired_geomean": 1.1067286893877477, "ci95": [1.106009875321246, 1.1075244903919783], "wins": 6},
+        "cublaslt": {"paired_geomean": 2.985267326348212, "ci95": [2.9832487232940736, 2.9873942550167647], "wins": 6},
+        "cusparselt_prune": {"paired_geomean": 3.0030986989679973, "ci95": [2.997901734128518, 3.0108160629394924], "wins": 6}
+      }
+    },
+    "128": {
+      "median_ms": {"ccglib": 1.9808889, "cublaslt": 4.81630659, "cusparselt_prune": 4.715669635, "beam24": 1.7324491100000001},
+      "external_over_beam24": {
+        "ccglib": {"paired_geomean": 1.1431257588200807, "ci95": [1.1424777980506051, 1.143630572742497], "wins": 6},
+        "cublaslt": {"paired_geomean": 2.7899133726334355, "ci95": [2.777033069443317, 2.8029985493962672], "wins": 6},
+        "cusparselt_prune": {"paired_geomean": 2.72054038272825, "ci95": [2.7188622566938707, 2.722518603935476], "wins": 6}
+      }
+    },
+    "512": {
+      "median_ms": {"ccglib": 3.8209368, "cublaslt": 6.10448575, "cusparselt_prune": 5.474249840000001, "beam24": 2.60783136},
+      "external_over_beam24": {
+        "ccglib": {"paired_geomean": 1.465214116023705, "ci95": [1.4621048220451152, 1.4682465066918031], "wins": 6},
+        "cublaslt": {"paired_geomean": 2.3379105460847702, "ci95": [2.3098800854191923, 2.362269763324467], "wins": 6},
+        "cusparselt_prune": {"paired_geomean": 2.1067025811980447, "ci95": [2.097245437910849, 2.117206089481863], "wins": 6}
+      }
+    }
+  }
+}

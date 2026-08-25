@@ -1,0 +1,46 @@
+{
+  "validation": "beam24_regular_ula_robustness_cold_staging_2026-08-24",
+  "state": "measured",
+  "scope": "curated reviewer-facing CPU robustness target",
+  "source": {
+    "base_commit": "1f399aa184be069cd381a5dff0af63cce8f7431d",
+    "regular_ula_robustness_sha256": "f763011a80d6b7c61feffef1470d91eb9a7c6bbaef52be523a9b12a016261880",
+    "heldout_wrapper_sha256": "dd68603a8b016ed7336582f5a988105d778ee90f123abd06ab15e1ede8d915ec",
+    "artifact_driver_sha256": "178f001e001479999be30c01a18dbb684476498e5f8fbf32e2e945e95b7b5804"
+  },
+  "bundle_contract": {
+    "curation": "explicit whitelist",
+    "experiments_included": false,
+    "work_included": false,
+    "baselines_contract_included": true,
+    "external_data_required": false,
+    "gpu_required": false
+  },
+  "checks": {
+    "make_check": "pass",
+    "unit_tests": 15,
+    "shellcheck": "pass",
+    "reference_anchors": "pass",
+    "claim_framing": "pass",
+    "artifact_robustness_target": "pass"
+  },
+  "reproduced": {
+    "local_f4_exact_top1_min": 0.998046875,
+    "local_f4_max_shift_deg": 0.11730241775512695,
+    "hierarchy_exact_top1_min": 1.0,
+    "hierarchy_max_shift_deg": 0.0,
+    "local_minus_direct_mean_correlation_min": 0.011231199643591983
+  },
+  "retained_failure": {
+    "first_staging_attempt": "failed",
+    "cause": "curation whitelist omitted baselines/manifest.json",
+    "resolution": "include the baselines directory in the local curation whitelist",
+    "effect_on_claim": "none; artifact packaging bug only"
+  },
+  "decision": {
+    "implementation": "accepted reviewer-facing CPU target",
+    "mechanism": "reproduces the bounded top-1 gate without local experiments",
+    "thesis_impact": "supports artifact-level reproducibility of the new quality row",
+    "boundary": "does not validate GPU performance or external real-data rows"
+  }
+}

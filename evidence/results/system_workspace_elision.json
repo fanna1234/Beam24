@@ -1,0 +1,52 @@
+{
+  "experiment": "beam24_20260823_system_no_complex_workspace_batch256_k512",
+  "status": "accepted_capacity_cleanup",
+  "contract": {
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "target": "sm_120a",
+    "cuda": "13.2",
+    "batch": 256,
+    "m": 1024,
+    "n": 1024,
+    "k": 512,
+    "mode": "production check=0",
+    "final_output": "one FP32 max power and one beam index per batch"
+  },
+  "workspace": {
+    "previous_complex_workspace_bytes": 2147483648,
+    "current_complex_workspace_bytes": 0,
+    "correctness_mode_allocates_workspace": true
+  },
+  "beam24": {
+    "source_sha256": "29201877fa88c1156aff45be278f0b64b15235b7d725a23e114d7e43cbd07bd5",
+    "binary_sha256": "7d85a1603d1081e9eb8f996c6b75bd2adfdec27d74d0421fc60611da63c9fcf0",
+    "registers": 168,
+    "shared_bytes": 100400,
+    "stack_bytes": 0,
+    "spill_bytes": 0,
+    "memcheck_errors": 0,
+    "check1": "pass",
+    "check0_k512_reported_workspace_bytes": 0,
+    "check0_graph_reported_workspace_bytes": 0
+  },
+  "dense_fused": {
+    "source_sha256": "6a7c6137935a9a7703e290fe3b5a71c37eede5d058e5422c6a23af1d9292acd7",
+    "binary_sha256": "c58e69c9b7d67e0250dbfdfafea60c23fd0f30a3f9f1e27f12b65304a67224a7",
+    "registers": 168,
+    "shared_bytes": 98352,
+    "stack_bytes": 0,
+    "spill_bytes": 0,
+    "memcheck_errors": 0,
+    "check1": "pass",
+    "check0_k512_reported_workspace_bytes": 0
+  },
+  "sass_invariance": {
+    "beam24_fused_instruction_lines": 2192,
+    "beam24_fused_hmma_sp": 128,
+    "beam24_fused_ldl": 0,
+    "beam24_fused_stl": 0,
+    "old_and_new_extracted_sass_sha256": "2bb15e3ceda14f726d7cf23720c6d3f1db09dab873f28391f1e923ed744bcd0f",
+    "byte_identical": true
+  },
+  "claim_boundary": "capacity cleanup only; existing paired latency evidence is unchanged"
+}

@@ -1,0 +1,366 @@
+# Beam24: Exploiting Regular-Array Phase Structure for 2:4 Sparse Tensor-Core Beamforming
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![CUDA](https://img.shields.io/badge/CUDA-13.0--13.3-76B900.svg)](https://developer.nvidia.com/cuda-toolkit) [![GPU](https://img.shields.io/badge/GPU-SM120a-4B8BBE.svg)](#performance-contract)
+
+Beam24 is a cross-layer beamforming system that turns the local phase structure
+of regularly sampled line arrays into hardware-legal **joint-complex 2:4
+sparsity**. It then maps the transformed beamformer to native Sparse Tensor
+Core instructions and keeps beam-power and top-1 selection on the GPU. For the
+regular-array top-1 route, a two-level search evaluates a broad 128-beam
+subarray codebook, refines eight selected sectors, and executes only the
+resulting 128 full-array beam slots.
+
+The key point is not to prune a dense beamformer after the fact. Beam24 changes
+the representation so that the signal structure and the hardware sparsity
+contract agree.
+
+## The problem
+
+For $M$ beams, $K$ sensors, and $N$ snapshots, multi-beam processing
+computes
+
+$$
+\mathbf{Y}=\overline{\mathbf{W}}\mathbf{X},
+\qquad
+\mathbf{W}\in\mathbb{C}^{M\times K},
+\quad
+\mathbf{X}\in\mathbb{C}^{K\times N}.
+$$
+
+Here $\mathbf{W}$ contains nonconjugated steering rows. This is a large complex
+GEMM, but regular-array steering weights are dense.
+Sparse Tensor Cores require two zeros in each aligned group of four values
+along the reduction dimension. Directly removing two antenna-domain
+coefficients changes coherent phase accumulation and degrades the spatial
+response.
+
+On ten real 48-sensor VLA recordings, direct joint-complex 2:4 selection gives
+only **0.97075** mean spatial-spectrum correlation and matches the dense peak
+on **10%** of recordings. The hardware format is useful; the naive
+representation is not.
+
+## The Beam24 insight
+
+Adjacent sensors in a regular line array follow a predictable local phase
+progression. Let $\mathbf{F}$ be block diagonal with unitary four-point
+transforms. Beamforming admits the exact change of basis
+
+$$
+\overline{\mathbf{W}}\mathbf{X}
+=\overline{(\mathbf{W}\mathbf{F})}(\mathbf{F}\mathbf{X})
+=\overline{\mathbf{U}}\mathbf{Z}.
+$$
+
+The dense steering vector becomes two-mode compressible within each local
+four-sensor block. Beam24 therefore:
+
+1. transforms steering weights into local beamspace;
+2. selects two complex modes per four-element group using one shared support
+   for the real and imaginary components;
+3. fuses the dynamic $\mathbf{F}\mathbf{X}$ transform into the GPU producer;
+4. evaluates the resulting complex product with native sparse MMA; and
+5. reduces $|Y|^2$ and selects the strongest beam without materializing the
+   complex output matrix.
+
+```mermaid
+flowchart LR
+    W[Dense steering weights W] --> WF[Local four-point beamspace]
+    X[Complex sensor snapshots X] --> FX[Fused dynamic transform F X]
+    WF --> S[Joint-complex 2:4 weights S]
+    S --> MMA[Four sparse real MMA contributions]
+    FX --> MMA
+    MMA --> ACC[FP32 complex accumulators]
+    ACC --> P[Accumulator-resident beam power]
+    P --> TOP[GPU top-1 beam / DOA]
+```
+
+The approximation occurs only when two transformed modes are retained. The
+change of basis itself is exact, and every retained group is exactly legal for
+the hardware 2:4 path.
+
+## Cross-layer design
+
+### 1. Signal-structured support
+
+Beam24 chooses a single two-of-four support for each complex group. Sharing the
+support between real and imaginary weights preserves complex semantics and
+allows one sparse metadata stream to drive all four real products.
+
+Mask quality is evaluated in the spatial-response domain rather than by
+coefficient error alone. This is why the local-F4 representation recovers
+**0.999975** mean spectrum correlation on the real VLA recordings while direct
+antenna-domain 2:4 does not.
+
+### 2. Full-complex Sparse Tensor-Core operator
+
+For $\widehat{\mathbf{Y}}=\overline{\mathbf{S}}\mathbf{Z}$, each complex tile
+is assembled from
+
+$$
+\widehat{\mathbf{Y}}_{r}=\mathbf{S}_{r}\mathbf{Z}_{r}
+                 +\mathbf{S}_{i}\mathbf{Z}_{i},
+\qquad
+\widehat{\mathbf{Y}}_{i}=\mathbf{S}_{r}\mathbf{Z}_{i}
+                 -\mathbf{S}_{i}\mathbf{Z}_{r}.
+$$
+
+Beam24 maps these four terms to sparse MMA instructions while retaining the
+real and imaginary accumulator planes across the reduction loop. The SM120a
+kernel uses warp-specialized producer/consumer roles, a two-stage TMA pipeline,
+shared-memory local transforms, `ldmatrix` fragment loads, and FP32
+accumulation.
+
+### 3. Same-output system fusion
+
+An operator-only comparison can hide the cost of downstream materialization.
+Beam24 therefore includes an internal dense Tensor-Core attribution control
+with the same final output contract: one FP32 maximum beam power and one beam
+index per batch. Both paths perform beamforming, power reduction, and top-1
+selection; only the representation and matrix engine differ.
+
+## Results
+
+### Signal quality
+
+| Configuration | Dataset / geometry | Mean spectrum correlation | Dense-peak agreement | Mean peak shift |
+|---|---|---:|---:|---:|
+| Dense reference | SPIB/SACLANT, 48-sensor VLA, 10 recordings | 1.000000 | 100% | 0.000° |
+| Direct joint 2:4 | Same data and beamformer | 0.970747 | 10% | 0.225° |
+| **Beam24 local-F4 joint 2:4** | Same data and beamformer | **0.999975** | **90%** | **0.025°** |
+| Beam24 local-F4 joint 2:4 | LOCATA Eigenmike, spherical geometry | 0.930901 | 11.1% | unsupported |
+
+The Eigenmike row is a deliberate negative boundary: the current construction
+is for regularly sampled line arrays, not arbitrary array geometry.
+
+The hierarchical top-1 route exactly matched exhaustive Beam24 on 481 ideal
+ULA source angles, ten SPIB recordings, 2,000 incoherent two/three-source ULA
+mixtures, and 500 coherent 64-snapshot mixtures. These results support top-1
+selection on regularly sampled line arrays; they do not establish general
+top-k recovery or arbitrary-array support.
+
+On 15 held-out SPIB P2701 moving-source and A2601_2 recordings, Local-F4
+matches dense top-1 in every file with zero grid shift and mean spectrum
+correlations of 0.999965 and 0.998332. The proportional K48 hierarchy fails on
+the same sessions, so they extend the local representation evidence but not
+the global search claim.
+
+### GPU performance
+
+At the primary K512 system shape, the integrated hierarchy includes Stage 1,
+device top-8 selection, packed-weight gather, sparse-metadata repacking, Stage
+2, and mapped top-1 in the timed region.
+
+| Scope | Comparator and role | Speedup | 95% paired bootstrap CI | Wins |
+|---|---|---:|---:|---:|
+| End-to-end top-1 | **External:** ccglib materialized-top1 | **10.837x** | [10.829, 10.843] | 6/6 |
+| Same hierarchy | **External:** ccglib dynamic-A hierarchy | **3.880x** | [3.879, 3.881] | 6/6 |
+| Same sparse executor | **Ablation:** exhaustive Beam24 | **4.565x** | [4.561, 4.569] | 6/6 |
+| Same hierarchy | **Attribution:** internal dense-fused control | **1.160x** | [1.159, 1.161] | 6/6 |
+
+The 10.837x row is the complete application result and intentionally includes
+hierarchical work reduction, sparse execution, and avoidance of materialized
+complex output. The 3.880x row applies the identical hierarchy to the fastest
+measured external dynamic-A path, closing the same-algorithm fairness
+comparison. The exhaustive and dense-fused rows isolate the algorithmic and
+sparse-executor contributions. Hierarchy uses 36,056,064 bytes of dynamic
+candidate workspace and retains the exhaustive route when
+`batch × snapshots < 3072`, where its fixed multi-launch cost is slower on the
+measured SM120a K512 route.
+
+A second measured point at batch64, M1024, N512, K512 retains 2.386x over the
+external identical-hierarchy path, 3.886x from global hierarchy, and 1.106x
+from local sparse execution, with 6/6 wins for every comparison. This is a
+shape-local replication on the same GPU, not cross-GPU evidence. A proposed
+static-A Stage-1 hybrid is rejected because it is 1.429x slower than ccglib
+basic dynamic-A.
+
+The uniform-angle grid is nonuniform in spatial frequency. An optimistic
+interpolation-free materialized FP32 cuFFT lower bound takes 6.584 ms, versus
+2.157 ms for exhaustive Beam24 and 0.470 ms for the hierarchy. FP16 cuFFT is
+not promoted because its transform max-absolute error, 0.0521, exceeds the
+frozen 0.02 gate.
+
+The stricter same-grid comparator uses a quality-passing 4096-point FP32 cuFFT,
+linear complex interpolation to the 1024 uniform-angle beams, and direct
+power/top-1. It takes 27.301 ms versus 0.470 ms for Beam24, a measured 58.119x
+ratio. This result closes the evaluated materialized cuFFT implementation, not
+pruned NUFFT, CZT, or a hypothetical non-materialized Fourier algorithm.
+
+FP16 cuFFT is not promoted under either Fourier control.
+
+The exhaustive results below remain the representation/executor controls with
+no hierarchical work reduction.
+
+All rows below use an NVIDIA RTX PRO 6000 Blackwell Workstation Edition,
+$B=256$, $M=N=1024$, $K=512$, complex FP16 inputs, and FP32
+accumulation. Each speedup is the paired geometric mean of six independent
+direction-balanced processes.
+
+| Scope | Comparator and role | Beam24 speedup | 95% paired bootstrap CI | Wins |
+|---|---|---:|---:|---:|
+| Full complex output | ccglib opt-static-A | **1.47097x** | [1.46888, 1.47308] | 6/6 |
+| Beamforming + power + top-1 | **External:** materialized ccglib pipeline | **2.37665x** | [2.37546, 2.37791] | 6/6 |
+| Beamforming + power + top-1 | **Attribution:** internal dense-fused control | **1.50462x** | [1.50362, 1.50582] | 6/6 |
+
+The 2.37665x row is the exhaustive-path external system control and includes
+the generally applicable benefit of avoiding complex-output materialization.
+The 1.50462x row is its matched internal attribution after applying the same
+output fusion to dense Tensor Cores. The primary hierarchical result remains the
+hierarchical 10.837x complete result paired with the 3.880x same-algorithm
+external comparison above.
+
+The completed multi-K campaign additionally measures Beam24 over the fastest
+ccglib configuration at **1.107x / 1.143x / 1.465x** for K64/K128/K512. The
+same-output dense-fused attribution ratios are **1.630x / 1.593x / 1.505x**.
+These are independent replication rows, not replacements for the canonical
+K512 campaigns. See [the evaluation suite](baselines/README.md) for contract
+separation.
+
+A fresh-checkout validation rebuilt the SM120a targets, passed numerical
+checks and Compute Sanitizer with zero errors, and reproduced the internal
+dense-fused attribution at **1.50431x**, with wins in all six processes.
+
+## Performance contract
+
+| Item | Validated setting |
+|---|---|
+| GPU | NVIDIA RTX PRO 6000 Blackwell Workstation Edition, compute capability 12.0 |
+| CUDA | 13.0–13.3; validation run used 13.2.51 |
+| Input / accumulation | Planar complex FP16 / FP32 |
+| Primary shape | batch=256, M=1024, N=1024, K=512 |
+| Timing | CUDA events, device-resident inputs, 20 warmups, 100 iterations |
+| Repetition | Six independent AB/BA processes under one GPU lock |
+| System output | One FP32 maximum power and one beam index per batch |
+| Complex output workspace | 0 B in production `check=0`; allocated only for correctness oracle |
+| Static preparation | Steering-weight transform and compression amortized |
+
+The repository does not extrapolate these numbers to unmeasured shapes,
+precisions, GPU generations, host-transfer-inclusive execution, or multi-GPU
+systems.
+
+## Reproduce
+
+### CPU smoke test
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt
+./artifact/reproduce.sh smoke
+```
+
+This validates the result anchors, repository contracts, and a bounded
+synthetic ULA quality case without requiring a GPU or external dataset.
+
+### SM120a correctness
+
+```bash
+cmake --preset sm120
+cmake --build --preset sm120
+./artifact/reproduce.sh gpu-smoke
+```
+
+The target builds the sparse operator, internal dense-fused control, exhaustive
+fused system, and hierarchical system; checks high-entropy numerical cases;
+and runs Compute Sanitizer when it is available.
+
+### Real VLA quality
+
+```bash
+./artifact/scripts/get_data.sh spib
+export BEAM24_DATA_ROOT="$PWD/work/datasets"
+./artifact/reproduce.sh quality
+```
+
+### Synthetic perturbation robustness
+
+```bash
+./artifact/reproduce.sh robustness
+```
+
+This CPU-only target runs three held-out seeds and 3,072 continuous-angle K512
+ULA trials per condition. It validates the bounded top-1 claim and preserves
+the rejected full-spectrum robustness gate as counterevidence.
+
+### Materialized cuFFT lower bound
+
+```bash
+./artifact/reproduce.sh fft-lower-bound
+```
+
+This SM120 target rebuilds the FP32 and rejected FP16 cuFFT paths, applies their
+declared correctness gates, and runs six F/E/H process orderings. It reproduces
+the optimistic interpolation-free materialized cuFFT lower bound.
+
+### Internal same-output attribution campaign
+
+```bash
+./artifact/reproduce.sh system
+```
+
+The system target fails closed unless an SM120 GPU and supported CUDA toolkit
+are present. It records every process log under a fresh `artifact/runs/`
+directory and reports the internal dense-fused attribution against the
+checked-in reference. The primary external ccglib system result is retained in
+the checked-in external-baseline evidence.
+
+### Hierarchical system campaign
+
+```bash
+./artifact/reproduce.sh hierarchy
+```
+
+This target rebuilds the exhaustive and shape-local hierarchical binaries,
+runs six direction-balanced processes at batch256 M=N=1024 K512, and checks
+the measured exhaustive-to-hierarchical speedup against the checked-in
+reference. External ccglib remains a separately recorded dependency-pinned
+campaign.
+
+To inspect every command without running hardware or data-dependent targets:
+
+```bash
+./artifact/reproduce.sh --dry-run all
+```
+
+## Repository structure
+
+```text
+src/cuda/            sparse operator, fused Beam24 system, dense-fused control
+src/quality/         synthetic and real-data signal-quality evaluators
+baselines/           pinned comparators, CUDA drivers, and admission contract
+artifact/            fail-fast reproduce entrypoint, data hooks, fixed contracts
+evidence/results/    checked-in quality and performance result records
+evidence/validation/ independent cold-build and rerun records
+docs/                datasets, result ledger, and reproducibility policy
+tests/               CPU-only repository and contract tests
+```
+
+External datasets, generated outputs, binaries, profiler reports, and raw
+campaign logs are intentionally excluded from version control.
+
+The frozen external comparator set, dataset matrix, exact revisions, and
+remaining quality cells are documented in
+[baselines/README.md](baselines/README.md).
+
+## Scope and limitations
+
+- **Supported geometry:** regularly sampled line arrays. The current
+  joint-complex construction is not valid for arbitrary spherical or irregular
+  arrays.
+- **Signal task:** Beam24 accelerates the beamforming-to-power/top-1 pipeline;
+  it does not introduce a new DOA estimator independent of the beamformer.
+- **Precision:** measured GPU results use complex FP16 input and FP32
+  accumulation.
+- **Hardware:** native performance evidence is currently limited to SM120a.
+- **Quality:** real VLA spectrum preservation is measured, but it is not an
+  absolute underwater localization-accuracy claim.
+
+The exact claim-to-evidence mapping is recorded in
+[docs/CLAIMS.md](docs/CLAIMS.md). Dataset provenance and checksums are in
+[docs/DATASETS.md](docs/DATASETS.md), and the fixed measurement procedure is in
+[docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md).
+
+## License
+
+Beam24 is released under the [MIT License](LICENSE). External datasets and
+third-party dependencies retain their own licenses.

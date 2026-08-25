@@ -1,0 +1,24 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "cpu-check",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/cpu-check",
+      "cacheVariables": {"BEAM24_ENABLE_CUDA": "OFF"}
+    },
+    {
+      "name": "sm120",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/sm120",
+      "cacheVariables": {
+        "BEAM24_ENABLE_CUDA": "ON",
+        "BEAM24_CUDA_ARCH": "120a",
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ],
+  "buildPresets": [
+    {"name": "sm120", "configurePreset": "sm120", "jobs": 4}
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "experiment": "beam24_20260823_acoular64_multisource_quality",
+  "stage": "q3_nonula_budgeted_dither3",
+  "input_kind": "synthetic_acoustic_waveform",
+  "contract": {
+    "max_substitutions": 3,
+    "minimum_snr_loss_db": -1.0,
+    "maximum_psll_delta_db": 3.0,
+    "sidelobe_exclusion_radius_m": 0.04,
+    "channel_grouping": "fixed_upstream_order"
+  },
+  "variants": [
+    {
+      "variant": "D0_dense",
+      "peak_xy_m": [
+        [
+          -0.09999999999999992,
+          -0.09999999999999992
+        ],
+        [
+          0.1500000000000003,
+          1.6653345369377348e-16
+        ],
+        [
+          1.6653345369377348e-16,
+          0.10000000000000026
+        ]
+      ],
+      "peak_power_db_relative": [
+        0.0,
+        -3.0237175645262573,
+        -5.318866296574626
+      ],
+      "truth_to_peak_assignment": [
+        0,
+        1,
+        2
+      ],
+      "truth_location_error_m": [
+        1.1775693440128312e-16,
+        3.477763656540197e-16,
+        3.002224531865041e-16
+      ],
+      "max_truth_location_error_m": 3.477763656540197e-16,
+      "max_peak_shift_vs_dense_m": 0.0,
+      "source_peak_delta_db_vs_dense": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "worst_source_peak_loss_db": 0.0,
+      "psll_db": -5.876867138234319,
+      "psll_delta_db_vs_dense": 0.0,
+      "map_correlation": 1.0,
+      "map_nmse": 0.0,
+      "mean_noise_gain_delta_db": 0.0,
+      "worst_noise_gain_delta_db": 0.0
+    },
+    {
+      "variant": "Q2_localf4_joint_top2",
+      "peak_xy_m": [
+        [
+          -0.09999999999999992,
+          -0.09999999999999992
+        ],
+        [
+          0.1500000000000003,
+          1.6653345369377348e-16
+        ],
+        [
+          1.6653345369377348e-16,
+          0.10000000000000026
+        ]
+      ],
+      "peak_power_db_relative": [
+        0.0,
+        -3.0267915628459763,
+        -5.3494193813536555
+      ],
+      "truth_to_peak_assignment": [
+        0,
+        1,
+        2
+      ],
+      "truth_location_error_m": [
+        1.1775693440128312e-16,
+        3.477763656540197e-16,
+        3.002224531865041e-16
+      ],
+      "max_truth_location_error_m": 3.477763656540197e-16,
+      "max_peak_shift_vs_dense_m": 0.0,
+      "source_peak_delta_db_vs_dense": [
+        0.015212034042117639,
+        0.012138035722398468,
+        -0.015341050736912526
+      ],
+      "worst_source_peak_loss_db": -0.015341050736912526,
+      "psll_db": -5.804306968693018,
+      "psll_delta_db_vs_dense": 0.07256016954130118,
+      "map_correlation": 0.9970413532368454,
+      "map_nmse": 0.006695759484436045,
+      "mean_noise_gain_delta_db": 0.6953583321744574,
+      "worst_noise_gain_delta_db": 1.2807001484914018
+    },
+    {
+      "variant": "Q3_nonula_budgeted_dither3",
+      "peak_xy_m": [
+        [
+          -0.09999999999999992,
+          -0.09999999999999992
+        ],
+        [
+          0.1500000000000003,
+          1.6653345369377348e-16
+        ],
+        [
+          1.6653345369377348e-16,
+          0.10000000000000026
+        ]
+      ],
+      "peak_power_db_relative": [
+        0.0,
+        -3.0267915628459763,
+        -5.3494193813536555
+      ],
+      "truth_to_peak_assignment": [
+        0,
+        1,
+        2
+      ],
+      "truth_location_error_m": [
+        1.1775693440128312e-16,
+        3.477763656540197e-16,
+        3.002224531865041e-16
+      ],
+      "max_truth_location_error_m": 3.477763656540197e-16,
+      "max_peak_shift_vs_dense_m": 0.0,
+      "source_peak_delta_db_vs_dense": [
+        0.015212034042117639,
+        0.012138035722398468,
+        -0.015341050736912526
+      ],
+      "worst_source_peak_loss_db": -0.015341050736912526,
+      "psll_db": -5.8043069686930195,
+      "psll_delta_db_vs_dense": 0.0725601695412994,
+      "map_correlation": 0.9970447678799799,
+      "map_nmse": 0.006694334320643449,
+      "mean_noise_gain_delta_db": 0.6953583321744574,
+      "worst_noise_gain_delta_db": 1.2807001484914018
+    }
+  ],
+  "synthesis_diagnostics": {
+    "rows_times_frequencies": 8405,
+    "changed_group_mean": 0.0,
+    "changed_group_max": 0,
+    "snr_gate_pass_fraction": 0.9689470553242118,
+    "snr_gate_fail_count": 261,
+    "psll_gate_pass_fraction": 1.0,
+    "psll_gate_fail_count": 0
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "acoular64": {
+    "record": "https://zenodo.org/records/5809069",
+    "files": {
+      "three_sources.h5": {"url": "https://zenodo.org/api/records/5809069/files/three_sources.h5/content", "md5": "ca8efe2834a63dda373ee67ce6b0678f"},
+      "array_64.xml": {"url": "https://zenodo.org/api/records/5809069/files/array_64.xml/content", "md5": "42fa95ba46ddd940548e66e41b1737a4"}
+    }
+  },
+  "locata": {
+    "record": "https://zenodo.org/records/3630471",
+    "files": {"dev.zip": {"url": "https://zenodo.org/api/records/3630471/files/dev.zip/content", "md5": "d5a5417c3f6b2ed0e43581dd06f504e6"}}
+  },
+  "spib48": {
+    "record": "https://spib.linse.ufsc.br/array.html",
+    "files": {
+      "A2601_1_10.zip": {"url": "https://spib.linse.ufsc.br/data/array/A2601_1_10.zip", "md5": "b05df6154890cc4fc64c044cc61a9f2c"},
+      "SACLANT_sens.dat": {"url": "https://spib.linse.ufsc.br/data/array/SACLANT_sens.dat", "md5": "126b4ae6e007030ffb510dd7d720f4bc"}
+    }
+  }
+}

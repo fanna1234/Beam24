@@ -1,0 +1,61 @@
+{
+  "experiment": "beam24_20260824_top1_robustness_heldout",
+  "state": "measured",
+  "last_verified": "2026-08-24",
+  "contract": {
+    "geometry": "nominal half-wavelength ULA",
+    "sensors": 512,
+    "beams": 1024,
+    "beam_grid_deg": [-60.0, 60.0],
+    "source_angles": "continuous uniform [-55, 55]",
+    "heldout_seeds": [20260825, 20260826, 20260827],
+    "trials_per_condition_per_seed": 1024,
+    "total_trials_per_condition": 3072,
+    "oracle": "nominal dense beamformer on the identical perturbed received manifold",
+    "hierarchy_oracle": "exhaustive local-F4 Beam24",
+    "noise": "deterministic expected output power"
+  },
+  "practical_envelope": {
+    "conditions": {
+      "snr_db_min": 0.0,
+      "gain_std_db_max": 1.0,
+      "phase_std_deg_max": 5.0,
+      "position_std_lambda_max": 0.005,
+      "coherent_reflection_db_max": -10.0,
+      "combined_row": "SNR 10 dB, gain sigma 1 dB, phase sigma 5 degrees, position sigma 0.005 lambda, reflection -10 dB"
+    },
+    "local_f4_exact_top1_min": 0.998046875,
+    "local_f4_exact_top1_mean_min": 0.9983723958333334,
+    "local_f4_max_shift_deg": 0.11730241775512695,
+    "hierarchy_exact_top1_min": 1.0,
+    "hierarchy_max_shift_deg": 0.0,
+    "local_minus_direct_mean_correlation_min": 0.011231199643591983
+  },
+  "stress_diagnostics": {
+    "conditions": "SNR -5 dB, gain sigma 2 dB, phase sigma 10 degrees, position sigma 0.01 lambda, reflection -6 dB",
+    "local_f4_exact_top1_min": 0.99609375,
+    "local_f4_max_shift_deg": 0.11730289459228516,
+    "hierarchy_exact_top1_min": 1.0,
+    "hierarchy_max_shift_deg": 0.0,
+    "promoted_claim": false
+  },
+  "counterevidence": {
+    "experiment": "beam24_20260824_regular_array_robustness_top1",
+    "result": "rejected joint spectrum/top-1 promotion gate",
+    "reason": "K512 continuous off-grid clean mean spectrum correlation was below 0.999 and per-condition p05 correlation was about 0.991--0.992",
+    "boundary": "top-1 evidence must not be rewritten as full-spectrum perturbation equivalence"
+  },
+  "decision": {
+    "implementation": "accepted held-out CPU quality oracle",
+    "mechanism": "bounded synthetic regular-array top-1 robustness supported",
+    "thesis_impact": "may add bounded synthetic top-1 perturbation evidence",
+    "allowed_wording": "Across the declared synthetic regular-array perturbation envelope, Beam24 retains at least 99% dense top-1 agreement with at most 0.25-degree shift, while the hierarchy retains at least 99.9% agreement with exhaustive Beam24.",
+    "boundary": "synthetic continuous-angle K512 ULA top-1; not full-spectrum, real calibration, top-k, or general-array evidence"
+  },
+  "provenance": {
+    "git_commit": "1f399aa184be069cd381a5dff0af63cce8f7431d",
+    "wrapper_source_sha256": "91c77739324b598852ea69b9ca9614193ef1e4edaccaa987ce068c393341d33b",
+    "base_source_sha256": "f763011a80d6b7c61feffef1470d91eb9a7c6bbaef52be523a9b12a016261880",
+    "raw_root": "experiments/beam24_20260824_top1_robustness_heldout/raw"
+  }
+}

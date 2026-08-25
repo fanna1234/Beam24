@@ -1,0 +1,100 @@
+{
+  "experiment": "beam24_20260823_e2e_beampower_batch256",
+  "status": "accepted_doa_system_keeper",
+  "contract": {
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "target": "sm_120a",
+    "cuda": "13.2",
+    "batch": 256,
+    "m": 1024,
+    "n": 1024,
+    "k": 512,
+    "output": "fp32_power_batch_by_m",
+    "timing_scope": "device_resident_beamforming_plus_power",
+    "warmup": 20,
+    "iterations": 100,
+    "fresh_processes": 6,
+    "order": "all_6_permutations_D0_S0_S1"
+  },
+  "paths": {
+    "D0": "ccglib_opt_static_a_plus_standalone_power",
+    "S0": "v10_full_complex_plus_standalone_power",
+    "S1": "v10_fused_atomic_power"
+  },
+  "correctness": {
+    "dense_power_cpu": "pass",
+    "sparse_separate_power_cpu": "pass",
+    "fused_vs_separate_k64_k128_k512_k4096": "pass",
+    "k4096_fused_vs_separate_max_abs": 0.03125,
+    "memcheck_errors": 0,
+    "synccheck_errors": 0
+  },
+  "timing": {
+    "D0_median_ms": 5.101957795,
+    "D0_mean_ms": 5.1004285,
+    "S0_median_ms": 3.766372445,
+    "S0_mean_ms": 3.7668654933333334,
+    "S1_median_ms": 2.14381993,
+    "S1_mean_ms": 2.143348218333333,
+    "S1_over_S0": 1.757466957504783,
+    "S1_over_S0_ci95": [1.7559664227179528, 1.7589687745511242],
+    "S1_over_S0_wins": 6,
+    "S1_over_D0": 2.3796568491206918,
+    "S1_over_D0_ci95": [2.3772342253267045, 2.3820819417946844],
+    "S1_over_D0_wins": 6,
+    "S0_over_D0": 1.3540265089815864,
+    "S0_over_D0_ci95": [1.35206466165386, 1.355991202951967]
+  },
+  "profile": {
+    "S0_power_replay_ms": 1.330944,
+    "S0_power_dram_pct": 95.735283,
+    "S0_power_long_scoreboard": 51.520128,
+    "S1_fused_replay_ms": 3.093888,
+    "S1_fused_compute_pct": 58.667906,
+    "S1_fused_dram_pct": 15.812862,
+    "S1_l2_atomic_active_pct": 0.269019,
+    "S1_partial_atomic_updates": 8388608
+  },
+  "doa": {
+    "output": "max_power_and_beam_index_per_batch",
+    "top1_correctness": "exact_index_and_zero_max_power_diff",
+    "top1_ncu_replay_us": 3.52,
+    "direct_median_ms": 2.144681575,
+    "direct_mean_ms": 2.144878706666667,
+    "graph_median_ms": 2.14641929,
+    "graph_mean_ms": 2.1458133483333333,
+    "direct_over_graph": 0.9995645587229534,
+    "direct_over_graph_ci95": [0.9988927591242619, 1.0002368101366137],
+    "graph_wins": 0,
+    "graph_decision": "rejected_priority_shape"
+  },
+  "doa_dense_campaign": {
+    "dense_median_ms": 5.10490799,
+    "dense_mean_ms": 5.103936273333333,
+    "beam24_median_ms": 2.14708698,
+    "beam24_mean_ms": 2.146908203333333,
+    "paired_speedup": 2.3773440437465,
+    "ci95": [2.3750337743578767, 2.379656560406176],
+    "wins": 6,
+    "dense_source_sha256": "5790265efcae5056384ac12c2c75252f0766377ba1020ed1ed08b4f54b02185e",
+    "dense_binary_sha256": "4461519320eecfaf7303435e55e904de3718d96ebb0b5804b737e7b1ad091db0",
+    "beam24_source_sha256": "12c2bfb159a0a200437e7af5ed3cdc132f5517916326e60e150a6e9ef8c07a31",
+    "beam24_binary_sha256": "d1a3e26b0ebd3c5a3506013b3950fab31f54991cd7ab3d8bc2bea920cb220aa4",
+    "graph_runner_sha256": "c1702d4c939a96527ccaf800433fb9ca5a83cd23e0184ce15be63b0578b53a90",
+    "dense_runner_sha256": "7b7ed2a889c8699fa04de5798df35aa8fe510dade6bd5c8d233e8cfe1fe141a1"
+  },
+  "provenance": {
+    "dense_source_sha256": "7bb5313a6e1720bc6e9131cf440f776dff2f9e96b942186b101f1e471b92043a",
+    "dense_binary_sha256": "ebe1899a1a71c62f944419702300f6c68adb9b81b64a47efdf8bbe89cbfa27b5",
+    "separate_source_sha256": "d678456e1a87c175c82dbf067de1d8cbb8df783d3e16351fa652542aa196d187",
+    "separate_binary_sha256": "b941287471450a217c4cb80fe738d35ece494b3abd5125ccd27d734389cfe5e8",
+    "fused_source_sha256": "889e0b5e6991f337cc62de258f16c2f8b0bcf2f18e157f09502726943c984935",
+    "fused_binary_sha256": "cc3da333cbcff55bc3b6eebe4a7510211310a21b12033473e1d45e545d960eda",
+    "runner_sha256": "265900a5615bdf8c73acb1e517e5bf5b396ba05bf7cffb9dff2ad65fda377ece"
+  },
+  "decision": {
+    "system_keeper": "direct_fused_power_plus_gpu_top1_doa",
+    "S2_partial_buffer": "not_admitted_atomic_pressure_not_limiting",
+    "next": "real_scene_quality_and_upstream_stft_contract"
+  }
+}

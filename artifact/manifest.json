@@ -1,0 +1,14 @@
+{
+  "artifact": "Beam24",
+  "version": "0.1.0-dev",
+  "entrypoint": "artifact/reproduce.sh",
+  "targets": {
+    "smoke": {"hardware": "CPU", "data": "generated", "claim": "quality formulation and repository contract"},
+    "gpu-smoke": {"hardware": "SM120 GPU", "data": "generated", "claim": "native build and numerical correctness"},
+    "quality": {"hardware": "CPU", "data": "external checksum-pinned", "claim": "real regular-VLA spectrum preservation"},
+    "robustness": {"hardware": "CPU", "data": "generated", "claim": "bounded synthetic regular-ULA top-1 robustness"},
+    "fft-lower-bound": {"hardware": "SM120 GPU", "data": "generated", "claim": "optimistic interpolation-free materialized FP32 cuFFT lower bound and retained FP16 rejection"},
+    "system": {"hardware": "RTX PRO 6000 SM120", "data": "generated", "claim": "1.50462x internal same-output attribution control"},
+    "hierarchy": {"hardware": "RTX PRO 6000 SM120", "data": "generated regular ULA", "claim": "4.56517x internal exhaustive-to-hierarchical ablation"}
+  }
+}

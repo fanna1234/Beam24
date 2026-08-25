@@ -1,0 +1,84 @@
+{
+  "experiment": "beam24_20260823_locata_eigenmike_realdata",
+  "contract": {
+    "tasks": [
+      1,
+      3
+    ],
+    "recordings": 6,
+    "max_blocks_per_recording": 20,
+    "nfft": 1024,
+    "window_ms": 30,
+    "hop_fraction": 0.25,
+    "frequency_hz": [
+      800,
+      1400
+    ],
+    "azimuth_step_deg": 5,
+    "elevation_step_deg": 10,
+    "dense_admission_error_deg": 15
+  },
+  "summary": {
+    "input_kind": "real_reverberant_locata",
+    "blocks_total": 120,
+    "blocks_dense_admitted": 54,
+    "dense_admission_rate": 0.45,
+    "variants": {
+      "D0_dense": {
+        "blocks": 54,
+        "dense_agreement_rate": 1.0,
+        "mean_error_deg": 9.810595127835132,
+        "mean_delta_error_deg": 0.0,
+        "max_shift_from_dense_deg": 1.2074182697257333e-06,
+        "mean_map_correlation": 1.0,
+        "worst_peak_delta_db_at_dense": 0.0
+      },
+      "Q1_direct_joint_2of4": {
+        "blocks": 54,
+        "dense_agreement_rate": 0.037037037037037035,
+        "mean_error_deg": 17.355028826846652,
+        "mean_delta_error_deg": 7.544433699011514,
+        "max_shift_from_dense_deg": 51.61919811386499,
+        "mean_map_correlation": 0.966842528609638,
+        "worst_peak_delta_db_at_dense": -0.30115170048835815
+      },
+      "Q2_localf4_joint_top2": {
+        "blocks": 54,
+        "dense_agreement_rate": 0.1111111111111111,
+        "mean_error_deg": 23.137840195734153,
+        "mean_delta_error_deg": 13.327245067899016,
+        "max_shift_from_dense_deg": 69.29518894536459,
+        "mean_map_correlation": 0.9309014918071058,
+        "worst_peak_delta_db_at_dense": -0.03828246400108427
+      },
+      "Q3_response_dither3": {
+        "blocks": 54,
+        "dense_agreement_rate": 0.0,
+        "mean_error_deg": 22.43784661924422,
+        "mean_delta_error_deg": 12.627251491409087,
+        "max_shift_from_dense_deg": 52.84144585594841,
+        "mean_map_correlation": 0.9721001144381977,
+        "worst_peak_delta_db_at_dense": -0.03087927382745038
+      },
+      "Q4_localf4_unstructured50": {
+        "blocks": 54,
+        "dense_agreement_rate": 0.07407407407407407,
+        "mean_error_deg": 17.244829866821163,
+        "mean_delta_error_deg": 7.434234738986029,
+        "max_shift_from_dense_deg": 65.82179604020884,
+        "mean_map_correlation": 0.9635289369431171,
+        "worst_peak_delta_db_at_dense": -0.0637155045010702
+      },
+      "Q5_localf4_independent_ri_2of4": {
+        "blocks": 54,
+        "dense_agreement_rate": 0.2777777777777778,
+        "mean_error_deg": 12.562471516032607,
+        "mean_delta_error_deg": 2.7518763881974753,
+        "max_shift_from_dense_deg": 33.225942203287566,
+        "mean_map_correlation": 0.9661874311551668,
+        "worst_peak_delta_db_at_dense": -0.07144927488024604
+      }
+    },
+    "note": "Q3 uses at most three signal-independent K4 mask substitutions to reduce steering-response magnitude NMSE under a 1 dB noise-gain constraint."
+  }
+}

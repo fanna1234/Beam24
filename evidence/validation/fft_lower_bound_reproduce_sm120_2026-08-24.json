@@ -1,0 +1,45 @@
+{
+  "validation": "beam24_fft_lower_bound_cold_artifact_2026-08-24",
+  "state": "measured",
+  "last_verified": "2026-08-24",
+  "contract": {
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "compute_capability": "12.0",
+    "driver": "610.43.02",
+    "cuda": "13.2.51",
+    "shape": "batch256, snapshots=1024, K=512, beams=1024",
+    "timing": "CUDA events, 20 warmups, 100 iterations, six F/E/H orderings",
+    "interpolation_to_uniform_angle_grid": "excluded"
+  },
+  "build": {
+    "curated_tree": true,
+    "source_sha256": "0842d8b60979ab972ad15247fabf10f733f6d135475d9beec8dfa12fcbd2def5",
+    "fp32_binary_sha256": "ffa6d990b6fa7cab7bf1ac28123139b52c534c25e28fa79ae4f463022a2ed8c5",
+    "fp16_binary_sha256": "7a906aeaf8b807983821e4f04bc96295ed6474973429f28d7732b091735d30c6"
+  },
+  "correctness": {
+    "fp32_max_abs_error": 7.37345e-06,
+    "fp32_status": "passed",
+    "fp32_memcheck_errors": 0,
+    "fp16_max_abs_error": 0.0521364,
+    "fp16_expected_exit_code": 3,
+    "fp16_status": "rejected"
+  },
+  "performance": {
+    "processes": 6,
+    "cufft_fp32_median_ms": 6.57651639,
+    "beam24_exhaustive_median_ms": 2.137929795,
+    "beam24_hierarchy_median_ms": 0.469623208,
+    "within_3_percent_of_reference": true
+  },
+  "decision": {
+    "implementation": "accepted cold artifact target",
+    "mechanism": "reproduces the optimistic FP32 Fourier lower bound and retained FP16 rejection",
+    "thesis_impact": "the FFT screen is independently reproducible without external data",
+    "boundary": "not a same-output uniform-angle baseline because interpolation is excluded"
+  },
+  "provenance": {
+    "entrypoint": "artifact/reproduce.sh fft-lower-bound",
+    "raw_root": "experiments/beam24_20260823_fft_nufft_baseline_k512/raw/remote/fresh_artifact_20260824"
+  }
+}

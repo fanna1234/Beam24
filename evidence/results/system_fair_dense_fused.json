@@ -1,0 +1,107 @@
+{
+  "comparisons": {
+    "dense_fused_over_beam24": {
+      "candidate": "S2",
+      "marginal_median_speedup": 1.5044091976587521,
+      "paired_bootstrap_95ci": [
+        1.5036190614212186,
+        1.505817962626796
+      ],
+      "paired_geomean_speedup": 1.5046190851967502,
+      "process_ratios": [
+        1.5035256558629333,
+        1.5043723931814312,
+        1.502869144017235,
+        1.5047432197540935,
+        1.5073001270929265,
+        1.5049078260445108
+      ],
+      "process_wins": 6,
+      "processes": 6,
+      "reference": "D1"
+    },
+    "dense_materialized_over_beam24": {
+      "candidate": "S2",
+      "marginal_median_speedup": 2.3766697682190974,
+      "paired_bootstrap_95ci": [
+        2.37546009740601,
+        2.377908319403263
+      ],
+      "paired_geomean_speedup": 2.376646614700093,
+      "process_ratios": [
+        2.3764315070366826,
+        2.3791274871106936,
+        2.377043819668053,
+        2.3748460152466184,
+        2.3776366559005027,
+        2.374797148666012
+      ],
+      "process_wins": 6,
+      "processes": 6,
+      "reference": "D0"
+    },
+    "dense_materialized_over_dense_fused": {
+      "candidate": "D1",
+      "marginal_median_speedup": 1.5798027371261805,
+      "paired_bootstrap_95ci": [
+        1.5782506229819941,
+        1.5808952277871724
+      ],
+      "paired_geomean_speedup": 1.5795669735169635,
+      "process_ratios": [
+        1.58057263457387,
+        1.5814751040992845,
+        1.5816705194399767,
+        1.5782400505746874,
+        1.5774142210723234,
+        1.5780349517537644
+      ],
+      "process_wins": 6,
+      "processes": 6,
+      "reference": "D0"
+    }
+  },
+  "contract": {
+    "accumulation": "FP32",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation",
+    "input": "planar complex FP16",
+    "iterations": 100,
+    "output": "one FP32 max power and one beam index per batch",
+    "processes": 6,
+    "shape": {
+      "K": 512,
+      "M": 1024,
+      "N": 1024,
+      "batch": 256
+    },
+    "warmup": 20
+  },
+  "decision": {
+    "beam24_beats_fair_dense": true,
+    "dense_fusion_accepted": true,
+    "primary_external_comparison": "dense_materialized_over_beam24",
+    "internal_attribution_control": "dense_fused_over_beam24"
+  },
+  "experiment": "beam24_20260823_dense_fused_power_top1_sm120",
+  "state": "paired",
+  "variant_distribution": {
+    "D0": {
+      "mean_ms": 5.1032873783333335,
+      "median_ms": 5.1041789049999995,
+      "p10_ms": 5.09929323,
+      "p90_ms": 5.106389999999999
+    },
+    "D1": {
+      "mean_ms": 3.2308174383333337,
+      "median_ms": 3.230896355,
+      "p10_ms": 3.225212455,
+      "p90_ms": 3.236343505
+    },
+    "S2": {
+      "mean_ms": 2.1472642816666667,
+      "median_ms": 2.147618055,
+      "p10_ms": 2.144560695,
+      "p90_ms": 2.149614095
+    }
+  }
+}

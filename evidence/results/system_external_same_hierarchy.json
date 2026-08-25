@@ -1,0 +1,110 @@
+{
+  "experiment": "beam24_20260824_external_same_hierarchy_sm120",
+  "state": "measured",
+  "last_verified": "2026-08-24",
+  "contract": {
+    "hardware": {
+      "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+      "compute_capability": "12.0",
+      "driver": "610.43.02"
+    },
+    "software": {
+      "cuda": "13.2.51",
+      "target": "sm_120a",
+      "ccglib_commit": "756cc1436136387087d9f5f4778c90f347658cd0"
+    },
+    "shape": {
+      "batch": 256,
+      "m": 1024,
+      "n": 1024,
+      "k": 512
+    },
+    "precision": "planar complex FP16 input and FP32 accumulation/power",
+    "algorithm": {
+      "stage1": "centered K128 subarray and 128 broad beams",
+      "selection": "deterministic GPU top-8 sectors",
+      "stage2": "128 padded full-array K512 refinement rows",
+      "output": "one FP32 maximum power and one full-grid beam index per batch"
+    },
+    "timing": {
+      "launch_mode": "direct for both paths",
+      "warmup": 20,
+      "iterations": 100,
+      "processes": 6,
+      "gpu_lock": "/tmp/beam24_gpu_campaign.lock",
+      "inputs": "device resident",
+      "static_preparation": "amortized"
+    }
+  },
+  "engine_selection": {
+    "admission_rule": "dynamic-A legal paths only",
+    "selected": "ccglib basic",
+    "rejected_or_slower": {
+      "ccglib_opt_full_pipeline_ms": {
+        "k128": 0.692865014,
+        "k512": 1.81160092
+      },
+      "cublaslt_four_gemm_complex_only_ms": {
+        "k128": 0.74746877,
+        "k512": 1.29746807
+      }
+    },
+    "selected_component_ms": {
+      "k128_materialized_power_top1": 0.462608933,
+      "k512_materialized_power_top1": 1.1930598
+    },
+    "excluded": "ccglib opt-static-A is illegal for data-dependent Stage-2 A unless transformed-layout gather cost is included"
+  },
+  "correctness": {
+    "standalone_ccglib_k128_bad": 0,
+    "standalone_ccglib_k512_bad": 0,
+    "regular_ula_batches": 481,
+    "winner_missing": 0,
+    "index_mismatch": 0,
+    "max_relative_power": 0.0,
+    "dense_a_mismatch": 0,
+    "subarray_input_mismatch": 0,
+    "memcheck_errors": 0,
+    "initcheck_errors": 0,
+    "synccheck_errors": 0,
+    "racecheck_hazards": 0
+  },
+  "performance": {
+    "external_ccglib_same_hierarchy": {
+      "baseline_median_ms": 1.821947215,
+      "beam24_median_ms": 0.4695961625,
+      "marginal_median_speedup": 3.879817086452447,
+      "paired_geomean_speedup": 3.879884423891296,
+      "paired_bootstrap_95ci": [3.8793252821725708, 3.880647105994889],
+      "process_wins": 6,
+      "processes": 6
+    }
+  },
+  "profile": {
+    "external_gpu_kernel_time_percent": {
+      "ccglib_wmma_complex_gemm_basic": 71.9,
+      "materialized_power_reduction": 15.9,
+      "center_subarray_input_gather": 7.2,
+      "dense_a_gather": 0.9,
+      "top8_and_mapped_argmax": 0.3
+    },
+    "external_visible_workspace_bytes": 470165504,
+    "beam24_dynamic_workspace_bytes": 36056064,
+    "new_helper_max_registers_per_thread": 32,
+    "new_helper_stack_bytes": 0,
+    "new_helper_local_bytes": 0
+  },
+  "decision": {
+    "implementation": "accepted external baseline",
+    "mechanism": "hierarchical Beam24 remains faster under the same algorithm",
+    "thesis_impact": "closes the external same-algorithm fairness gap",
+    "allowed_wording": "At batch256 M=N=1024 K512 on SM120a, hierarchical Beam24 is 3.880x faster than the fastest measured external-library implementation of the same hierarchy.",
+    "boundary": "system-level direct-launch result; not an operator-only, cross-shape, or cross-GPU claim"
+  },
+  "provenance": {
+    "baseline_source_sha256": "bee3de936571a7ae26f34f6fba110186d34ad5fb522d3d065af97d3f4869a6e3",
+    "baseline_binary_sha256": "fb0170380fa93495a527eb9f3198b7f6455bb8db6ba985858c761d3b0a6360db",
+    "ccglib_library_sha256": "a023df156f934a3ad24dc9c3837469864e064ce1c06a217245411997bdfd3885",
+    "raw_root": "experiments/beam24_20260824_external_same_hierarchy_sm120/raw"
+  }
+}

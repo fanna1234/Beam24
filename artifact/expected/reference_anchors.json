@@ -1,0 +1,46 @@
+{
+  "version": 5,
+  "quality": {
+    "spib48_vla_mean_map_correlation": 0.99998,
+    "spib48_vla_max_peak_shift_deg": 0.25,
+    "regular_ula_robustness_local_top1_min": 0.998046875,
+    "regular_ula_robustness_local_max_shift_deg": 0.11730241775512695,
+    "regular_ula_robustness_hierarchy_top1_min": 1.0,
+    "regular_ula_robustness_local_minus_direct_correlation_min": 0.011231199643591983,
+    "interpolated_fft_spib_mean_map_correlation": 0.99999954,
+    "heldout_p2701_local_map_correlation": 0.9999654403930244,
+    "heldout_a2601_2_local_map_correlation": 0.9983317596376212,
+    "heldout_real_local_exact_top1_min": 1.0,
+    "heldout_real_hierarchy_exact_top1_min": 0.0
+  },
+  "operator": {
+    "sm120_batch256_m1024_n1024_k512_speedup": 1.47097
+  },
+  "system": {
+    "same_output_dense_fused_speedup": 1.50462,
+    "materialized_ccglib_pipeline_speedup": 2.37665,
+    "hierarchical_external_ccglib_speedup": 10.83733,
+    "hierarchical_external_same_algorithm_speedup": 3.87988,
+    "hierarchical_exhaustive_ablation_speedup": 4.56517,
+    "hierarchical_dense_attribution_speedup": 1.16019,
+    "optimistic_cufft_fp32_ms": 6.58421,
+    "fft_campaign_beam24_exhaustive_ms": 2.15700,
+    "fft_campaign_beam24_hierarchy_ms": 0.470204,
+    "same_grid_cufft_fp32_ms": 27.3012056,
+    "same_grid_cufft_over_beam24": 58.11889705946582,
+    "stage1_static_over_basic": 1.4287232206763218,
+    "second_shape_external_same_hierarchy_speedup": 2.3864966237043252,
+    "second_shape_global_hierarchy_speedup": 3.886019316226,
+    "second_shape_local_sparse_speedup": 1.1059489349458387
+  },
+  "claim_roles": {
+    "primary_external_operator": "operator.sm120_batch256_m1024_n1024_k512_speedup",
+    "exhaustive_external_system_control": "system.materialized_ccglib_pipeline_speedup",
+    "exhaustive_internal_attribution": "system.same_output_dense_fused_speedup",
+    "primary_hierarchical_external_system": "system.hierarchical_external_ccglib_speedup",
+    "primary_hierarchical_same_algorithm_external": "system.hierarchical_external_same_algorithm_speedup",
+    "hierarchy_algorithm_ablation": "system.hierarchical_exhaustive_ablation_speedup",
+    "hierarchy_sparse_attribution": "system.hierarchical_dense_attribution_speedup"
+  },
+  "gates": {"within_fraction": 0.97}
+}

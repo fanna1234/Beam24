@@ -1,0 +1,81 @@
+{
+  "experiment": "beam24_20260823_fft_nufft_baseline_k512",
+  "state": "measured",
+  "last_verified": "2026-08-24",
+  "contract": {
+    "hardware": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition, SM120a",
+    "driver": "610.43.02",
+    "cuda": "13.2.51",
+    "shape": "batch256, snapshots=1024, K=512, beams=1024",
+    "input": "device-resident planar complex FP16",
+    "timing": "CUDA events, 20 warmups, 100 iterations, six processes with all six F/E/H orderings",
+    "final_consumer": "power reduction and top-1",
+    "fft_grid": "uniform spatial frequency",
+    "target_grid": "uniform angle and nonuniform spatial frequency",
+    "interpolation_to_target_grid": "excluded from GPU timing"
+  },
+  "applicability": {
+    "ordinary_fft_exact_for_target_grid": false,
+    "spatial_frequency_increment_cv": 0.18270618971036104,
+    "required_exact_method": "FFT plus interpolation, CZT, or NUFFT",
+    "interpretation": "the measured cuFFT latency is an optimistic Fourier-family lower bound, not a same-output headline baseline"
+  },
+  "quality": {
+    "cpu_interpolated_fft_spib48": {
+      "files": 10,
+      "mean_map_correlation": 0.9999995402681987,
+      "worst_map_correlation": 0.9999995131920774,
+      "max_peak_shift_deg": 0.0
+    },
+    "fp32_fft_transform": {
+      "max_abs_error": 7.37345e-06,
+      "gate": 0.02,
+      "status": "passed"
+    },
+    "fp16_fft_transform": {
+      "max_abs_error": 0.0521364,
+      "gate": 0.02,
+      "status": "rejected"
+    }
+  },
+  "performance": {
+    "processes": 6,
+    "cufft_fp32": {
+      "median_ms": 6.5842084849999996,
+      "min_ms": 6.57984066,
+      "max_ms": 6.58518553,
+      "interpolation_included": false,
+      "memcheck_errors": 0
+    },
+    "beam24_exhaustive_direct": {
+      "median_ms": 2.15699625,
+      "min_ms": 2.15306616,
+      "max_ms": 2.16063499
+    },
+    "beam24_hierarchy_direct": {
+      "median_ms": 0.47020368300000004,
+      "min_ms": 0.469800651,
+      "max_ms": 0.470361948
+    },
+    "cufft_over_beam24_exhaustive": 3.0524895372442113,
+    "cufft_over_beam24_hierarchy": 14.002885819590654
+  },
+  "counterevidence": {
+    "historical_fp16_latency_ms": 4.0862174,
+    "fp16_promoted": false,
+    "reason": "the FP16 transform failed the frozen max-absolute-error gate"
+  },
+  "decision": {
+    "implementation": "accepted FP32 optimistic Fourier lower bound",
+    "mechanism": "ordinary materialized cuFFT does not replace Beam24 at the primary shape",
+    "thesis_impact": "closes the missing Fourier-family performance screen at a favorable lower-bound contract",
+    "allowed_wording": "An optimistic FP32 cuFFT pipeline that excludes uniform-angle interpolation takes 6.584 ms, versus 2.157 ms for exhaustive Beam24 and 0.470 ms for hierarchical Beam24 on the measured K512 contract.",
+    "boundary": "not a same-output uniform-angle or calibrated-weight result; FP16 is rejected"
+  },
+  "provenance": {
+    "source_sha256": "0842d8b60979ab972ad15247fabf10f733f6d135475d9beec8dfa12fcbd2def5",
+    "fp32_binary_sha256": "2fec616d4b14370cdaaac30d74c610b50451c0825be0afe764f2b1d0a7a43e06",
+    "fp16_binary_sha256": "0df66114bda30e4cba85aa9ee92b206a7dfaca7f802cc31cd0c0abbf7e901e8d",
+    "raw_root": "experiments/beam24_20260823_fft_nufft_baseline_k512/raw"
+  }
+}

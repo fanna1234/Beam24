@@ -1,0 +1,41 @@
+{
+  "experiment": "beam24_20260824_postreview_real_vla_heldout",
+  "state": "measured_mixed",
+  "datasets": {
+    "P2701_moving_170Hz": {
+      "files": 10,
+      "zip_md5": "0361b0fe5b934889197bbd7a8acdac92",
+      "frequency_hz": [160, 180],
+      "unique_dense_peak_directions": 10,
+      "local_f4_dense_exact_top1": 1.0,
+      "local_f4_max_shift_deg": 0.0,
+      "local_f4_mean_spectrum_correlation": 0.9999654403930244,
+      "proportional_hierarchy_dense_exact_top1": 0.4,
+      "proportional_hierarchy_exhaustive_beam24_exact_top1": 0.5,
+      "proportional_hierarchy_max_dense_shift_grid": 135
+    },
+    "A2601_2_350Hz": {
+      "files": 5,
+      "zip_md5": "68e86245e1d77b7e2444cd5b7e5a004c",
+      "frequency_hz": [340, 360],
+      "unique_dense_peak_directions": 1,
+      "local_f4_dense_exact_top1": 1.0,
+      "local_f4_max_shift_deg": 0.0,
+      "local_f4_mean_spectrum_correlation": 0.9983317596376212,
+      "proportional_hierarchy_dense_exact_top1": 0.0,
+      "proportional_hierarchy_exhaustive_beam24_exact_top1": 0.0,
+      "proportional_hierarchy_max_dense_shift_grid": 121
+    }
+  },
+  "diagnostic": {
+    "status": "not_promotable",
+    "finding": "larger Stage-1 apertures can repair the stationary 350 Hz session, while the moving source requires full-K Stage 1 for exhaustive-Beam24 agreement",
+    "boundary": "the held-out sessions were used to diagnose the failure, so tuned configurations are not independent validation"
+  },
+  "decision": {
+    "local_mode_sparsity": "accepted held-out real-data evidence",
+    "global_beam_sparsity": "rejected on these held-out K48 sessions",
+    "claim_use": "promote Local-F4 evidence only; do not broaden real-data hierarchy wording",
+    "raw_root": "experiments/beam24_20260824_postreview_real_vla_heldout/raw"
+  }
+}

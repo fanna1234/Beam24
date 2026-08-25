@@ -1,0 +1,273 @@
+{
+  "version": 4,
+  "frozen_contract": {
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "compute_capability": "12.0",
+    "cuda": "13.2.51",
+    "shape": {"batch": 256, "m": 1024, "n": 1024, "k": 512},
+    "input": "planar complex FP16",
+    "accumulation": "FP32",
+    "timing": "CUDA events; 20 warmups; 100 iterations; six independent AB/BA processes",
+    "static_work": "weight-only preparation amortized",
+    "operator_output": "planar complex FP32",
+    "system_output": "one FP32 maximum power and one beam index per batch"
+  },
+  "external_sources": [
+    {
+      "id": "ccglib",
+      "name": "Complex Common GEMM Library",
+      "repository": "https://github.com/nlesc-recruit/ccglib.git",
+      "commit": "756cc1436136387087d9f5f4778c90f347658cd0",
+      "license": "Apache-2.0",
+      "role": "primary external dense complex Tensor-Core baseline",
+      "sparse_paths": []
+    },
+    {
+      "id": "cutlass",
+      "name": "NVIDIA CUTLASS",
+      "repository": "https://github.com/NVIDIA/cutlass.git",
+      "commit": "dcf215af68a2d08d305076c152a06f201728cd53",
+      "release": "v4.7.0",
+      "license": "BSD-3-Clause for the selected C++ subset",
+      "role": "dense/structured-sparse primitive reference; not a headline denominator",
+      "sparse_paths": [
+        "include",
+        "tools/util/include",
+        "examples/10_planar_complex",
+        "examples/80_blackwell_geforce_sparse_gemm"
+      ]
+    },
+    {
+      "id": "cuda_library_samples",
+      "name": "NVIDIA CUDA Library Samples",
+      "repository": "https://github.com/NVIDIA/CUDALibrarySamples.git",
+      "commit": "34377293fb148e90aad16fd762fa2445f941be55",
+      "license": "Apache-2.0",
+      "role": "official cuBLAS and cuSPARSELt API references",
+      "sparse_paths": [
+        "cuBLAS/Extensions/GemmStridedBatchedEx",
+        "cuBLAS/Level-3/gemm3m",
+        "cuSPARSELt"
+      ]
+    },
+    {
+      "id": "cusparselt",
+      "name": "NVIDIA cuSPARSELt",
+      "version": "0.9.1.1",
+      "documentation": "https://docs.nvidia.com/cuda/cusparselt/",
+      "license": "NVIDIA CUDA Toolkit component terms",
+      "role": "off-the-shelf structured-sparse real GEMM baseline"
+    },
+    {
+      "id": "cuda_toolkit",
+      "name": "NVIDIA CUDA Toolkit cuFFT",
+      "version": "13.2.51",
+      "documentation": "https://docs.nvidia.com/cuda/cufft/",
+      "license": "NVIDIA CUDA Toolkit component terms",
+      "role": "Fourier-family system lower bound"
+    }
+  ],
+  "external_related_methods": [
+    {
+      "id": "SPARSE_ARRAY_ADMM_SINR",
+      "name": "Sparse Array Beamformer Design via ADMM",
+      "url": "https://arxiv.org/abs/2208.12313",
+      "objective": "physical sensor selection for output-SINR maximization",
+      "execution_status": "no verified official implementation",
+      "matrix_role": "related method; not a same-input/output GPU denominator"
+    },
+    {
+      "id": "SPARSE_ARRAY_ADMM_BEAMPATTERN",
+      "name": "Sparse Array Beampattern Synthesis via ADMM",
+      "url": "https://doi.org/10.1109/TAP.2018.2811778",
+      "objective": "sparse physical array and beampattern synthesis",
+      "execution_status": "no verified official implementation",
+      "matrix_role": "quality-only method if independently reimplemented"
+    },
+    {
+      "id": "DFT_BEAMSPACE_REDUCTION",
+      "name": "DFT beamspace dimension reduction",
+      "url": "https://arxiv.org/abs/2107.06953",
+      "objective": "reduced-dimensional beamspace processing",
+      "execution_status": "method-level comparator",
+      "matrix_role": "conceptual comparator; output dimension differs"
+    }
+  ],
+  "baselines": [
+    {
+      "id": "DENSE_REFERENCE",
+      "tier": "quality",
+      "ownership": "internal_reference",
+      "table_role": "oracle",
+      "name": "dense beamformer",
+      "implementation": "src/quality/spib_vla_screen.py",
+      "status": "measured",
+      "required": true,
+      "purpose": "quality oracle"
+    },
+    {
+      "id": "ABL_DIRECT_ANTENNA_JOINT_2OF4",
+      "tier": "quality",
+      "ownership": "internal_ablation",
+      "table_role": "ablation",
+      "name": "direct antenna-domain joint-complex magnitude 2:4",
+      "implementation": "src/quality/spib_vla_screen.py",
+      "status": "measured",
+      "required": true,
+      "purpose": "tests whether the local transform is necessary"
+    },
+    {
+      "id": "ABL_LOCAL_F4_UNSTRUCTURED50",
+      "tier": "quality",
+      "ownership": "internal_ablation",
+      "table_role": "ablation",
+      "name": "local-F4 unstructured 50-percent support",
+      "implementation": "src/quality/spib_vla_screen.py",
+      "status": "measured",
+      "required": true,
+      "purpose": "quality ceiling without exact K-axis 2:4 legality"
+    },
+    {
+      "id": "ABL_LOCAL_F4_INDEPENDENT_RI",
+      "tier": "quality",
+      "ownership": "internal_ablation",
+      "table_role": "ablation",
+      "name": "independent real/imaginary local-F4 2:4",
+      "implementation": "src/quality/spib_vla_screen.py",
+      "status": "measured",
+      "required": true,
+      "purpose": "separates shared complex support from independent metadata"
+    },
+    {
+      "id": "CCGLIB_BASIC",
+      "tier": "operator",
+      "ownership": "external",
+      "table_role": "configuration",
+      "name": "ccglib basic complex GEMM",
+      "source": "ccglib",
+      "implementation": "baselines/cuda/ccglib_complex_driver.cpp",
+      "status": "measured",
+      "required": true,
+      "purpose": "shape-local dense fallback"
+    },
+    {
+      "id": "CCGLIB_OPT_STATIC_A",
+      "tier": "operator",
+      "ownership": "external",
+      "table_role": "configuration",
+      "name": "ccglib optimized complex GEMM with static-A preparation amortized",
+      "source": "ccglib",
+      "implementation": "baselines/cuda/ccglib_complex_driver.cpp",
+      "status": "measured",
+      "required": true,
+      "purpose": "primary external full-complex denominator"
+    },
+    {
+      "id": "CCGLIB_FULL_PIPELINE",
+      "tier": "operator",
+      "ownership": "external",
+      "table_role": "configuration",
+      "name": "ccglib optimized full pipeline",
+      "source": "ccglib",
+      "implementation": "baselines/cuda/ccglib_complex_driver.cpp",
+      "status": "measured",
+      "required": true,
+      "purpose": "includes both operand layout conversions"
+    },
+    {
+      "id": "CUBLASLT_COMPLEX_4GEMM",
+      "tier": "operator",
+      "ownership": "external",
+      "table_role": "main",
+      "name": "cuBLASLt four-real-GEMM complex decomposition",
+      "implementation": "baselines/cuda/cublaslt_four_gemm.cu",
+      "status": "measured",
+      "required": true,
+      "purpose": "vendor-library dense sanity baseline"
+    },
+    {
+      "id": "CUSPARSELT_REAL_PRIMITIVE",
+      "tier": "operator",
+      "ownership": "external",
+      "table_role": "primitive",
+      "name": "cuSPARSELt real structured-sparse GEMM",
+      "source": "cusparselt",
+      "implementation": "baselines/cuda/cusparselt_real_gemm.cu",
+      "status": "measured_primitive",
+      "required": false,
+      "purpose": "isolates the library-level 2:4 primitive benefit"
+    },
+    {
+      "id": "CUSPARSELT_PRUNE_COMPLEX",
+      "tier": "operator",
+      "ownership": "external",
+      "table_role": "main",
+      "name": "cuSPARSELt independent real/imaginary pruning and complex composition",
+      "source": "cusparselt",
+      "implementation": "baselines/cuda/cusparselt_prune_complex.cu",
+      "status": "measured",
+      "required": true,
+      "pruning_algorithm": "CUSPARSELT_PRUNE_SPMMA_STRIP",
+      "purpose": "true off-the-shelf sparse main baseline from antenna-domain weights"
+    },
+    {
+      "id": "BEAM24_REP_CUSPARSELT",
+      "tier": "operator",
+      "ownership": "hybrid_ablation",
+      "table_role": "backend_ablation",
+      "name": "Beam24 representation with cuSPARSELt execution backend",
+      "source": "cusparselt",
+      "implementation": "baselines/cuda/beam24_rep_cusparselt_backend.cu",
+      "status": "partial",
+      "required": false,
+      "purpose": "isolates custom fused execution from the Beam24 signal representation"
+    },
+    {
+      "id": "CCGLIB_MATERIALIZED_TOP1",
+      "tier": "system",
+      "ownership": "external",
+      "table_role": "main",
+      "name": "ccglib materialized complex output plus power and top-1",
+      "source": "ccglib",
+      "implementation": "baselines/cuda/ccglib_materialized_top1.cu",
+      "status": "measured",
+      "required": true,
+      "purpose": "external deployment pipeline"
+    },
+    {
+      "id": "CCGLIB_HIERARCHICAL_TOP1",
+      "tier": "system",
+      "ownership": "external",
+      "table_role": "main",
+      "name": "ccglib dynamic-A implementation of the same two-stage hierarchy",
+      "source": "ccglib",
+      "implementation": "baselines/cuda/ccglib_hierarchical_top1.cu",
+      "status": "measured",
+      "required": true,
+      "purpose": "external same-algorithm hierarchical denominator"
+    },
+    {
+      "id": "CUFFT_UNIFORM_SPATIAL_FREQUENCY_LOWER_BOUND",
+      "tier": "system",
+      "ownership": "external",
+      "table_role": "lower_bound",
+      "name": "cuFFT materialized uniform-spatial-frequency power/top-1 lower bound",
+      "source": "cuda_toolkit",
+      "implementation": "baselines/cuda/cufft_top1_lower_bound.cu",
+      "status": "measured",
+      "required": true,
+      "purpose": "optimistic Fourier-family screen; excludes uniform-angle interpolation"
+    },
+    {
+      "id": "DENSE_FUSED_TOP1_CONTROL",
+      "tier": "system",
+      "ownership": "internal_control",
+      "table_role": "attribution_control",
+      "name": "dense Tensor-Core beamforming with fused power and top-1",
+      "implementation": "src/cuda/dense_fused_baseline.cu",
+      "status": "measured",
+      "required": true,
+      "purpose": "internal same-output attribution denominator"
+    }
+  ]
+}

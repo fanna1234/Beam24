@@ -1,0 +1,15 @@
+[project]
+name = "beam24"
+version = "0.1.0.dev0"
+description = "Signal-structured 2:4 Sparse Tensor-Core beamforming"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+dependencies = [
+  "numpy>=2.0,<2.8",
+  "scipy>=1.13,<1.19",
+  "h5py>=3.11,<4",
+  "soundfile>=0.12,<0.15"
+]
+
+[tool.setuptools]
+py-modules = []

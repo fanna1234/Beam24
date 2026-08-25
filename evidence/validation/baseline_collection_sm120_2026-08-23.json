@@ -1,0 +1,47 @@
+{
+  "purpose": "baseline source collection and bounded correctness admission",
+  "date": "2026-08-23",
+  "hardware": {
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "compute_capability": "12.0"
+  },
+  "external_revisions": {
+    "ccglib": "756cc1436136387087d9f5f4778c90f347658cd0",
+    "cutlass": "dcf215af68a2d08d305076c152a06f201728cd53",
+    "cuda_library_samples": "34377293fb148e90aad16fd762fa2445f941be55",
+    "cusparselt": "0.9.1.1"
+  },
+  "promoted_driver_sha256": {
+    "ccglib_complex_driver.cpp": "86bf25a57009a9ece327d743b0779e80ca3aad2f39f8dbf0125ae8ef8059194f",
+    "ccglib_materialized_top1.cu": "5790265efcae5056384ac12c2c75252f0766377ba1020ed1ed08b4f54b02185e",
+    "cublaslt_four_gemm.cu": "3e73ac88b4de3de6840df9bdca3ecc135eb77037a9b856ff1df948f026977c02",
+    "cusparselt_real_gemm.cu": "022f5f736857b4f35e5ef351a530b394756c090b79217a931b8542b27e9e23a1"
+  },
+  "bounded_smoke": {
+    "shape": {"batch": 2, "m": 128, "n": 128, "k": 64},
+    "cublaslt_four_gemm": {
+      "correct": true,
+      "max_abs_diff": 0.0000057220459,
+      "bad_values": 0
+    },
+    "cusparselt_real_gemm": {
+      "correct": true,
+      "max_abs_diff": 0.00048828125,
+      "mismatch_count": 0
+    },
+    "ccglib_complex": {
+      "correct": true,
+      "max_abs_diff": 0.0,
+      "bad_values": 0
+    },
+    "ccglib_materialized_top1": {
+      "complex_correct": true,
+      "power_correct": true,
+      "top1_correct": true,
+      "max_power_abs_diff": 0.0,
+      "bad_top1_values": 0
+    }
+  },
+  "claim_boundary": "correctness smoke only; no performance result is promoted from this bounded run",
+  "remaining_required_baseline": "Beam24 representation with cuSPARSELt execution backend"
+}

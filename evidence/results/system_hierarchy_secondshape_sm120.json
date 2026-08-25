@@ -1,0 +1,44 @@
+{
+  "experiment": "beam24_20260824_postreview_hybrid_secondshape_sm120",
+  "state": "measured",
+  "hardware": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition, SM120a",
+  "hybrid_stage1_screen": {
+    "contract": "batch256 M128 N1024 K128 materialized power/top1",
+    "ccglib_basic_median_ms": 0.463030875,
+    "ccglib_opt_static_a_median_ms": 0.6616185605,
+    "paired_geomean_static_over_basic": 1.4287232206763218,
+    "paired_bootstrap_95ci": [1.4282225373668713, 1.4291520330407081],
+    "basic_wins": 6,
+    "decision": "reject Stage-1 opt_static-A plus Stage-2 basic"
+  },
+  "second_shape": {
+    "contract": "batch64 M1024 N512 K512",
+    "median_ms": {
+      "external_same_hierarchy_direct": 0.152488962,
+      "beam24_hierarchy_direct": 0.0638982393,
+      "beam24_exhaustive_graph": 0.251853287,
+      "beam24_hierarchy_graph": 0.06478751825,
+      "dense_hierarchy_graph": 0.0716603212
+    },
+    "external_same_hierarchy_speedup": 2.3864966237043252,
+    "external_same_hierarchy_95ci": [2.385597640873079, 2.3877032548609796],
+    "global_hierarchy_speedup": 3.886019316226,
+    "global_hierarchy_95ci": [3.8829500295089563, 3.888508384638579],
+    "local_sparse_speedup": 1.1059489349458387,
+    "local_sparse_95ci": [1.104973684812091, 1.1068930194478388],
+    "wins_each": 6,
+    "processes": 6
+  },
+  "provenance": {
+    "external_binary_sha256": "bf260ee907867b5b006d23feb89653bd396960037aa46bccfb84f511ea441f97",
+    "beam24_hierarchy_binary_sha256": "72ee08e6535d58f0e4e0e401e63fee1e3d8358c918ac711bf395f43d301f5514",
+    "beam24_exhaustive_binary_sha256": "27ce3877c831bcf8b0a991cfd8eed39d37fa6489d6547f291de84fe43cb1ac12",
+    "dense_hierarchy_binary_sha256": "f82da2040ffa436a5e9849e1873d3cf908f3de664af763345b1ff197b6de5308",
+    "raw_root": "experiments/beam24_20260824_postreview_hybrid_secondshape_sm120/raw"
+  },
+  "decision": {
+    "implementation": "accepted second-shape replication; hybrid rejected",
+    "thesis_impact": "supports shape-local persistence of external, global, and local sparse gains",
+    "boundary": "single GPU and second B/N work point; not cross-GPU or universal-shape evidence"
+  }
+}

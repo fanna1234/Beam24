@@ -1,0 +1,42 @@
+{
+  "purpose": "cold-checkout validation; not a replacement reference result",
+  "date": "2026-08-23",
+  "hardware": {
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "compute_capability": "12.0",
+    "driver": "610.43.02"
+  },
+  "software": {
+    "cuda": "13.2.51",
+    "architecture": "sm_120a"
+  },
+  "gpu_smoke": {
+    "fresh_build": "passed",
+    "operator_numerical_check": "passed",
+    "dense_baseline_numerical_check": "passed",
+    "system_numerical_check": "passed",
+    "compute_sanitizer_memcheck_errors": 0
+  },
+  "same_output_system_campaign": {
+    "shape": {
+      "batch": 256,
+      "m": 1024,
+      "n": 1024,
+      "k": 512
+    },
+    "process_ratios": [
+      1.5018621233845273,
+      1.5046991763326523,
+      1.5055268028147093,
+      1.5031058490658136,
+      1.5057622731624463,
+      1.5049087869319253
+    ],
+    "process_wins": 6,
+    "paired_geomean_speedup": 1.504310195631244,
+    "reference_anchor": 1.50462,
+    "status": "within_3_percent",
+    "dense_fused_median_ms": 3.226610305,
+    "beam24_median_ms": 2.14451313
+  }
+}

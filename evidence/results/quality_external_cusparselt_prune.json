@@ -1,0 +1,92 @@
+{
+  "experiment": "beam24_20260823_external_baseline_dataset_matrix/quality_external",
+  "state": "measured",
+  "external_baseline": {
+    "name": "cuSPARSELt-Prune-Complex",
+    "library": "cuSPARSELt 0.9.1.1",
+    "selected_algorithm": "CUSPARSELT_PRUNE_SPMMA_STRIP",
+    "semantics": "antenna-domain real and imaginary weights pruned independently",
+    "oracle_validation": "CPU strip/tile oracle matched NVIDIA device pruning with zero mismatches",
+    "execution_precision": "FP16 inputs and C/D, FP32 internal compute and public output; power-of-two input scaling fused into promotion"
+  },
+  "datasets": {
+    "SYNTHETIC_REGULAR": {
+      "contract": "K={48,64,128,512}; look=-60:0.5:60 deg; response=-90:0.025:90 deg",
+      "cusparselt_strip": {
+        "mean_snr_loss_db": -1.0971713661181202,
+        "worst_snr_loss_db": -3.010299956639812,
+        "mean_psll_delta_db": 4.854569331245877,
+        "max_psll_delta_db": 10.271243484674983,
+        "mean_magnitude_nmse": 0.3109684471396282
+      },
+      "beam24_local_f4": {
+        "mean_snr_loss_db": -0.39507762107385797,
+        "worst_snr_loss_db": -0.6876892358826301,
+        "mean_psll_delta_db": 1.7602258557709998,
+        "max_psll_delta_db": 3.2825530581363687,
+        "mean_magnitude_nmse": 0.08879736399690916
+      }
+    },
+    "SPIB48": {
+      "contract": "10 real 48-sensor VLA recordings",
+      "cusparselt_strip": {
+        "mean_map_correlation": 0.9982295286875674,
+        "dense_peak_agreement_rate": 0.9,
+        "mean_peak_shift_deg": 0.024999999999999956,
+        "max_peak_shift_deg": 0.24999999999999956
+      },
+      "cusparselt_tile": {
+        "mean_map_correlation": 0.9829095498334326,
+        "dense_peak_agreement_rate": 0.0,
+        "mean_peak_shift_deg": 0.6250000000000001
+      },
+      "beam24": {
+        "mean_map_correlation": 0.9999754533462382,
+        "dense_peak_agreement_rate": 0.9,
+        "mean_peak_shift_deg": 0.024999999999999956
+      }
+    },
+    "ACOU64": {
+      "contract": "64-channel, three-source synthetic acoustic waveform",
+      "cusparselt_strip": {
+        "map_correlation": 0.994952482464824,
+        "map_nmse": 0.010922283655977909,
+        "max_peak_shift_vs_dense_m": 0.0,
+        "mean_noise_gain_delta_db": 1.2158319100252188,
+        "worst_noise_gain_delta_db": 1.687213567384262
+      },
+      "cusparselt_tile": {
+        "map_correlation": 0.9566991169891425,
+        "map_nmse": 0.07807807284448129,
+        "max_peak_shift_vs_dense_m": 0.23021728866442695
+      },
+      "beam24": {
+        "map_correlation": 0.9970413532368455,
+        "map_nmse": 0.0066957594844360355,
+        "max_peak_shift_vs_dense_m": 0.0
+      }
+    },
+    "LOCATA32": {
+      "contract": "Tasks 1/3, six recordings, 120 blocks, 54 dense-admitted blocks",
+      "cusparselt_strip": {
+        "dense_agreement_rate": 0.018518518518518517,
+        "mean_error_deg": 26.281099780784068,
+        "mean_delta_error_deg": 16.47050465294894,
+        "mean_map_correlation": 0.8622688484644387
+      },
+      "cusparselt_tile": {
+        "dense_agreement_rate": 0.0,
+        "mean_error_deg": 42.089349720564286,
+        "mean_delta_error_deg": 32.27875459272916,
+        "mean_map_correlation": 0.734021829904404
+      },
+      "beam24": {
+        "status": "rejected_geometry",
+        "mean_error_deg": 23.137840195734153,
+        "mean_delta_error_deg": 13.327245067899016,
+        "mean_map_correlation": 0.9309014918071058
+      }
+    }
+  },
+  "decision": "strip is the frozen external pruning algorithm; tile is retained as a configuration ablation"
+}

@@ -1,0 +1,128 @@
+{
+  "validation": "beam24_20260824_cold_reproduce_sm120",
+  "state": "measured",
+  "last_verified": "2026-08-24",
+  "contract": {
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "compute_capability": "12.0",
+    "sms": 188,
+    "driver": "610.43.02",
+    "cuda": "13.2.51",
+    "shape": "batch256 M=N=1024 K512",
+    "precision": "planar complex FP16 input and FP32 accumulation/power",
+    "timing": "CUDA events, device resident, 20 warmups, 100 iterations, six alternating-order processes",
+    "gpu_lock": "/tmp/beam24_gpu_campaign.lock",
+    "external_library": {
+      "name": "ccglib",
+      "commit": "756cc1436136387087d9f5f4778c90f347658cd0",
+      "library_sha256": "a023df156f934a3ad24dc9c3837469864e064ce1c06a217245411997bdfd3885"
+    }
+  },
+  "build": {
+    "curated_tree": true,
+    "cpu_smoke": "pass",
+    "cuda_compiler": "/usr/local/cuda-13.2/bin/nvcc",
+    "beam24_hierarchy_source_sha256": "7b25020e627cb79f7109ab3f4785fe0e681827f63f908994b69b54839210c69f",
+    "beam24_hierarchy_binary_sha256": "72ee08e6535d58f0e4e0e401e63fee1e3d8358c918ac711bf395f43d301f5514",
+    "beam24_exhaustive_binary_sha256": "27ce3877c831bcf8b0a991cfd8eed39d37fa6489d6547f291de84fe43cb1ac12",
+    "external_same_source_sha256": "bee3de936571a7ae26f34f6fba110186d34ad5fb522d3d065af97d3f4869a6e3",
+    "external_same_binary_sha256": "bf260ee907867b5b006d23feb89653bd396960037aa46bccfb84f511ea441f97",
+    "external_standard_source_sha256": "5790265efcae5056384ac12c2c75252f0766377ba1020ed1ed08b4f54b02185e",
+    "external_standard_binary_sha256": "ffdeab0d5038e7607642fd5075dfc7082a29ffaa23b6144b8d66e20bce1fe1de"
+  },
+  "correctness": {
+    "beam24_gpu_smoke": "pass",
+    "beam24_hierarchy_winner_missing": 0,
+    "beam24_hierarchy_index_mismatch": 0,
+    "beam24_hierarchy_packed_a_mismatch": 0,
+    "beam24_hierarchy_metadata_mismatch": 0,
+    "beam24_memcheck_errors": 0,
+    "external_same_hierarchy_batches": 481,
+    "external_same_winner_missing": 0,
+    "external_same_index_mismatch": 0,
+    "external_same_dense_a_mismatch": 0,
+    "external_same_subarray_input_mismatch": 0,
+    "external_same_memcheck_errors": 0,
+    "external_standard_complex_bad": 0,
+    "external_standard_power_bad": 0,
+    "external_standard_doa_bad": 0,
+    "external_standard_memcheck_errors": 0
+  },
+  "performance": {
+    "internal_hierarchy_ablation": {
+      "exhaustive_median_ms": 2.14460254,
+      "hierarchy_median_ms": 0.4697705505,
+      "paired_geomean_speedup": 4.563959835370421,
+      "process_wins": 6,
+      "processes": 6,
+      "reference_anchor": 4.56517
+    },
+    "external_same_hierarchy": {
+      "external_median_ms": 1.8245795349999998,
+      "beam24_median_ms": 0.4697004855,
+      "paired_geomean_speedup": 3.8835688287525585,
+      "paired_bootstrap_95ci": [3.8802686688305905, 3.8868717954532426],
+      "external_first_geomean": 3.8838953072963616,
+      "beam24_first_geomean": 3.8832423776523997,
+      "process_wins": 6,
+      "processes": 6,
+      "reference_anchor": 3.87988
+    },
+    "external_standard_exhaustive": {
+      "external_median_ms": 5.09105396,
+      "beam24_median_ms": 0.4695566295,
+      "paired_geomean_speedup": 10.836654759188884,
+      "paired_bootstrap_95ci": [10.827561750769734, 10.845627445819492],
+      "process_wins": 6,
+      "processes": 6,
+      "reference_anchor": 10.83733
+    }
+  },
+  "profile": {
+    "scope": "diagnostic-only Nsight Systems and SASS; not public latency",
+    "external_gpu_kernel_time_percent": {
+      "ccglib_gemm": 73.5,
+      "materialized_power": 16.3,
+      "center_input_gather": 7.3,
+      "dense_a_gather": 0.9,
+      "selection_and_mapping": 0.3
+    },
+    "beam24_gpu_kernel_time_percent": {
+      "sparse_stages": 92.3,
+      "packed_a_gather": 1.9,
+      "top8": 0.9,
+      "metadata_repack": 0.4,
+      "mapped_argmax": 0.3
+    },
+    "sparse_kernel": {
+      "hmma_sp_per_variant": 128,
+      "registers_per_thread": 168,
+      "static_shared_bytes": 101424,
+      "stack_bytes": 0,
+      "local_bytes": 0,
+      "ldl": 0,
+      "stl": 0
+    }
+  },
+  "counterevidence": {
+    "contaminated_campaign_retained": true,
+    "paired_geomean_speedup": 4.615883795646308,
+    "outlier": "one exhaustive observation at 2.31827807 ms while five were approximately 2.13--2.14 ms",
+    "external_activity": "another user's GPU workload appeared immediately after the run",
+    "promoted_claim": false
+  },
+  "decision": {
+    "implementation": "accepted cold SM120a reproduction",
+    "mechanism": "headline speedups and decomposition reproduced",
+    "thesis_impact": "supports the existing public anchors without replacing them",
+    "boundary": "single SM120a primary shape; no cross-GPU or cross-shape promotion"
+  },
+  "provenance": {
+    "raw_root": "experiments/beam24_20260824_cold_reproduce_sm120/raw/remote",
+    "stable_hierarchy": "hierarchy_stable_002",
+    "external_same": "external_same_001",
+    "external_standard": "external_standard_001",
+    "profile": "profile_001",
+    "validation": "validation_001"
+  }
+}
