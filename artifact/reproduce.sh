@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 DRY_RUN=0
 TARGET=""
