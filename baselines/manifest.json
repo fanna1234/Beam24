@@ -211,18 +211,6 @@
       "purpose": "true off-the-shelf sparse main baseline from antenna-domain weights"
     },
     {
-      "id": "BEAM24_REP_CUSPARSELT",
-      "tier": "operator",
-      "ownership": "hybrid_ablation",
-      "table_role": "backend_ablation",
-      "name": "Beam24 representation with cuSPARSELt execution backend",
-      "source": "cusparselt",
-      "implementation": "baselines/cuda/beam24_rep_cusparselt_backend.cu",
-      "status": "partial",
-      "required": false,
-      "purpose": "isolates custom fused execution from the Beam24 signal representation"
-    },
-    {
       "id": "CCGLIB_MATERIALIZED_TOP1",
       "tier": "system",
       "ownership": "external",

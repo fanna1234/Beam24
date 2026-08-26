@@ -71,19 +71,12 @@
     "K128": {"CCGLIB_MATERIALIZED_TOP1": "measured", "CCGLIB_HIERARCHICAL_TOP1": "not_applicable", "CUFFT_STREAMED_UNIFORM_ANGLE_TOP1": "not_applicable", "BEAM24": "measured"},
     "K512": {"CCGLIB_MATERIALIZED_TOP1": "measured", "CCGLIB_HIERARCHICAL_TOP1": "measured", "CUFFT_STREAMED_UNIFORM_ANGLE_TOP1": "measured", "BEAM24": "measured"}
   },
-  "hybrid_backend_ablation": {
-    "name": "Beam24 representation with cuSPARSELt backend",
-    "binding": "BEAM24_REP_CUSPARSELT",
-    "profiles": {"K64": "measured", "K128": "measured", "K512": "measured"},
-    "quality": "not_required: representation quality is shared with Beam24; this row isolates backend execution"
-  },
   "internal_ablation_rows": [
     "dense reference",
     "direct antenna-domain joint-complex 2:4",
     "add local F4",
     "joint versus independent real/imaginary support",
     "magnitude versus response-aware support",
-    "cuSPARSELt backend versus custom fused sparse backend",
     "separate versus accumulator-resident power reduction",
     "dense fused same-output attribution control"
   ],

@@ -30,13 +30,6 @@ class BaselineInventoryTest(unittest.TestCase):
         self.assertEqual(
             next(
                 item for item in self.manifest["baselines"]
-                if item["id"] == "BEAM24_REP_CUSPARSELT"
-            )["table_role"],
-            "backend_ablation",
-        )
-        self.assertEqual(
-            next(
-                item for item in self.manifest["baselines"]
                 if item["id"] == "CUFFT_STREAMED_UNIFORM_ANGLE_TOP1"
             )["table_role"],
             "main",

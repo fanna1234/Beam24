@@ -183,18 +183,16 @@ maximum coverage rank of 37, so no arbitrary-signal recall guarantee is made.
 A second measured point at batch64, M1024, N512, K512 retains 2.386x over the
 external identical-hierarchy path, 3.886x from global hierarchy, and 1.106x
 from local sparse execution, with 6/6 wins for every comparison. This is a
-shape-local replication on the same GPU, not cross-GPU evidence. A proposed
-static-A Stage-1 hybrid is rejected because it is 1.429x slower than ccglib
-basic dynamic-A.
+shape-local replication on the same GPU, not cross-GPU evidence.
 
 The strongest same-grid Fourier control uses a quality-passing 4096-point FP32
 cuFFT, linear complex interpolation, and direct power/top-1. It streams two
 batches at a time, reducing the full-spectrum workspace from 8 GiB to 64 MiB.
 The maintained implementation takes 7.769 ms versus 0.4708 ms for Beam24, a
-paired 16.498x ratio with 95% CI [16.484, 16.512] and 6/6 wins. A direct
-cuFINUFFT 2.6 type-2 control passes the 481-angle gate only at `eps=1e-6` and
-takes 1.633 s; it is retained as a rejected implementation rather than the
-Fourier headline. These results do not bound every specialized NUFFT or CZT.
+paired 16.498x ratio with 95% CI [16.484, 16.512] and 6/6 wins. These results do
+not bound every specialized NUFFT or CZT. Superseded and rejected Fourier
+routes are separated under `baselines/history/` and
+`docs/HISTORICAL_FOURIER_CONTROLS.md`.
 
 The exhaustive results below remain the representation/executor controls with
 no hierarchical work reduction.

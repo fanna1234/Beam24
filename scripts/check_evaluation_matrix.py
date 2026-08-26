@@ -62,12 +62,6 @@ def main() -> None:
         check_cells(f"operator/{profile}", set(rows["operator"]), cells)
     for profile, cells in matrix["system_profiles"].items():
         check_cells(f"system/{profile}", set(rows["system"]), cells)
-    hybrid = matrix["hybrid_backend_ablation"]
-    if set(hybrid["profiles"]) != profiles:
-        raise SystemExit("hybrid backend ablation does not cover every profile")
-    if any(state not in VALID_STATES for state in hybrid["profiles"].values()):
-        raise SystemExit("hybrid backend ablation has invalid state")
-
     counts = {state: 0 for state in VALID_STATES}
     for cells in matrix["quality_cells"].values():
         for state in cells.values():

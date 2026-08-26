@@ -131,16 +131,16 @@ Completed:
 
 - external ccglib and cuBLASLt K64/K128/K512 operator profiles;
 - ccglib materialized-top1 and Beam24 K512 system row;
-- optimistic FP32 cuFFT K512 system lower bound, with uniform-angle
-  interpolation explicitly excluded and FP16 retained as rejected;
 - quality-passing streamed L4096 cuFFT with uniform-angle interpolation,
   64 MiB bounded workspace, and direct power/top-1;
 - Beam24 quality on all four dataset families, including the LOCATA rejection;
-- hybrid Beam24-representation/cuSPARSELt backend K64/K128/K512 profile.
+- internal dense-fused attribution under the same final-output contract.
 
 The selected external quality, operator, and system matrices are complete.
 Additional SNR/SIR, calibration, position-error, and multipath sweeps are
 optional robustness extensions rather than missing main-table cells.
+Superseded controls and slower backend experiments are retained only in
+`baselines/history/` and `evidence/history/`.
 
 ## Completed matrix summary
 
