@@ -2,19 +2,25 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![CUDA](https://img.shields.io/badge/CUDA-13.0--13.3-76B900.svg)](https://developer.nvidia.com/cuda-toolkit) [![GPU](https://img.shields.io/badge/GPU-SM120a-4B8BBE.svg)](#performance-contract)
 
-Beam24 is a cross-layer beamforming system that turns the local phase structure
-of regularly sampled line arrays into hardware-legal **joint-complex 2:4
-sparsity**. It then maps the transformed beamformer to native Sparse Tensor
-Core instructions and keeps beam-power and top-1 selection on the GPU. For the
-regular-array top-1 route, a two-level search evaluates a broad 128-beam
-subarray codebook, refines eight selected sectors, and executes only the
-resulting 128 full-array beam slots.
+Beam24 is a signal-to-hardware co-design for multi-beam processing on regularly
+sampled line arrays. It converts local phase structure into hardware-legal
+**joint-complex 2:4 sparsity**, converts angular locality into a fixed refinement
+tile, and preserves both structures through Sparse Tensor Core execution,
+beam-power reduction, and GPU top-1 selection.
 
-The key point is not to prune a dense beamformer after the fact. Beam24 changes
-the representation so that the signal structure and the hardware sparsity
-contract agree.
+<p align="center">
+  <img src="docs/assets/beam24-overview.svg" width="100%" alt="Beam24 turns regular-array phase and angular locality into fixed joint-complex sparse operands, executes them on Sparse Tensor Cores, and selects top-1 without materializing the complex output." />
+</p>
 
-## The problem
+<p align="center"><sub>Signal structure determines the sparse representation; the GPU pipeline preserves it through the final consumer.</sub></p>
+
+At the primary K512 operating point, the complete pipeline takes **0.470 ms**,
+is **3.88×** faster than the fastest measured external implementation of the
+identical hierarchy, and matches dense-GPU top-1 in **99.93%** of held-out
+finite-snapshot trials. The measured scope is SM120a, regular-line-array top-1;
+the repository does not extrapolate to arbitrary geometry or GPU generations.
+
+## Why dense beamforming does not map to 2:4
 
 For $M$ beams, $K$ sensors, and $N$ snapshots, multi-beam processing
 computes
@@ -27,19 +33,18 @@ $$
 \mathbf{X}\in\mathbb{C}^{K\times N}.
 $$
 
-Here $\mathbf{W}$ contains nonconjugated steering rows. This is a large complex
-GEMM, but regular-array steering weights are dense.
-Sparse Tensor Cores require two zeros in each aligned group of four values
-along the reduction dimension. Directly removing two antenna-domain
-coefficients changes coherent phase accumulation and degrades the spatial
-response.
+Here $\mathbf{W}$ contains nonconjugated steering rows. Regular-array steering
+weights are dense along the reduction dimension, while Sparse Tensor Cores
+require two zeros in every aligned group of four values in the sparse operand.
+Directly removing antenna-domain coefficients changes coherent accumulation and
+degrades the spatial response.
 
 On ten real 48-sensor VLA recordings, direct joint-complex 2:4 selection gives
 only **0.97075** mean spatial-spectrum correlation and matches the dense peak
 on **10%** of recordings. The hardware format is useful; the naive
 representation is not.
 
-## The Beam24 insight
+## Signal-to-hardware co-design
 
 Adjacent sensors in a regular line array follow a predictable local phase
 progression. Let $\mathbf{F}$ be block diagonal with unitary four-point
@@ -51,32 +56,21 @@ $$
 =\overline{\mathbf{U}}\mathbf{Z}.
 $$
 
-The dense steering vector becomes two-mode compressible within each local
-four-sensor block. Beam24 therefore:
+The change of basis is exact. Within each four-sensor block, the transformed
+steering progression concentrates in two adjacent modes. Beam24 retains one
+two-of-four support for the complete complex coefficient, so the real and
+imaginary planes share one metadata pattern across all four real products.
 
-1. transforms steering weights into local beamspace;
-2. selects two complex modes per four-element group using one shared support
-   for the real and imaginary components;
-3. fuses the dynamic $\mathbf{F}\mathbf{X}$ transform into the GPU producer;
-4. evaluates the resulting complex product with native sparse MMA; and
-5. reduces $|Y|^2$ and selects the strongest beam without materializing the
-   complex output matrix.
+Across beams, a centered subarray selects eight sectors that expand into one
+fixed 128-row full-aperture tile. This avoids an irregular candidate list while
+evaluating 15.6% of exhaustive beam--sensor work at the primary shape. The GPU
+producer fuses $\mathbf{F}\mathbf{X}$, the sparse executor retains FP32 complex
+accumulators, and the epilogue reduces $|Y|^2$ and selects top-1 without writing
+the 2-GiB complex output.
 
-```mermaid
-flowchart LR
-    W[Dense steering weights W] --> WF[Local four-point beamspace]
-    X[Complex sensor snapshots X] --> FX[Fused dynamic transform F X]
-    WF --> S[Joint-complex 2:4 weights S]
-    S --> MMA[Four sparse real MMA contributions]
-    FX --> MMA
-    MMA --> ACC[FP32 complex accumulators]
-    ACC --> P[Accumulator-resident beam power]
-    P --> TOP[GPU top-1 beam / DOA]
-```
-
-The approximation occurs only when two transformed modes are retained. The
-change of basis itself is exact, and every retained group is exactly legal for
-the hardware 2:4 path.
+Approximation begins only when two transformed modes and a bounded set of beam
+sectors are retained; the coordinate change and every emitted 2:4 group remain
+exactly legal by construction.
 
 ## Cross-layer design
 
