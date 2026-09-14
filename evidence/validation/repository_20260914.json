@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-14",
+  "role": "repository validation; frozen performance measurements unchanged",
+  "base_revision": "12e4a1213973e608a69e58f841b2b901604e7bb8",
+  "cuda_and_baseline_driver_sources_unchanged": true,
+  "cpu_tests_passed": 32,
+  "primary_build": {
+    "gpu_class": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "cuda": "13.2.51",
+    "production": "passed",
+    "ccglib": "passed",
+    "paired_timing": "not_run_gpu_occupied"
+  },
+  "real_quality": {
+    "dataset": "SPIB48 A2601_1_10",
+    "recordings": 10,
+    "archive_and_extracted_payload_checks": "passed",
+    "mean_map_correlation": 0.999975453346238,
+    "max_peak_shift_deg": 0.24999999999999956
+  },
+  "supplemental_functional_check": {
+    "scope": "functional portability only; not a primary performance reproduction",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+    "cuda": "13.1.115",
+    "driver": "590.48.01",
+    "gpu_smoke": "passed",
+    "memcheck_error_counts": [
+      0,
+      0
+    ],
+    "external_hierarchy_admission": {
+      "correctness": {
+        "E": {
+          "kind": "ccglib_same_hierarchy_correctness",
+          "winner_missing": 0,
+          "index_mismatch": 0,
+          "max_relative_power": 0,
+          "dense_a_mismatch": 0,
+          "subarray_input_mismatch": 0,
+          "status": "PASSED"
+        },
+        "H": {
+          "kind": "beam24_hierarchy_correctness",
+          "winner_missing": 0,
+          "index_mismatch": 0,
+          "max_relative_power": 1.77487678e-7,
+          "packed_a_mismatch": 0,
+          "metadata_mismatch": 0,
+          "batch": 481,
+          "status": "PASSED"
+        }
+      },
+      "binary_sha256": {
+        "external": "6b3a38394df020f895d1e0980c384ac560651e7c2ddb11b7e66b2bd7da15f6d3",
+        "beam24": "fb00d047fd4ccd390069841e99949399eaaea8845aad0d5ea8cd1625debb6f41"
+      },
+      "ccglib_library_sha256": "60d79eefeb2266681398431ef359c584aed1b50bc977166dee36715b3cd51af4",
+      "baseline_manifest_sha256": "a3d5895778134f8099d7881f64116cb41d6b235f29181044d01a0f576b8ff323"
+    },
+    "paired_timing": "not_run"
+  },
+  "not_rerun": [
+    "primary workstation paired performance",
+    "full finite-snapshot GPU quality campaign",
+    "full perturbation and margin/coverage campaign",
+    "Fourier performance campaign"
+  ],
+  "safety_checks": {
+    "wrong_revision_or_dirty_baseline": "rejected",
+    "partial_spib_extraction": "rejected",
+    "duplicate_or_nonfinite_pair_records": "rejected",
+    "foreign_gpu_work": "rejected on the selected device"
+  }
+}

@@ -9,18 +9,19 @@ TITLE = "Beam24: Exploiting Regular-Array Phase Structure for 2:4 Sparse Tensor-
 
 class ContractTest(unittest.TestCase):
     def test_title_is_coherent(self):
-        self.assertIn(TITLE, (ROOT / "README.md").read_text())
+        self.assertIn("# Beam24", (ROOT / "README.md").read_text())
+        self.assertIn(TITLE, (ROOT / "docs/DESIGN.md").read_text())
 
     def test_readme_math_is_not_setext_heading(self):
         readme = (ROOT / "README.md").read_text()
         self.assertNotRegex(readme, r"(?m)^=+$")
-        self.assertIn(r"\overline{\mathbf{W}}\mathbf{X}", readme)
+        self.assertIn(r"\overline{\mathbf{W}}\mathbf{X}", (ROOT / "docs/DESIGN.md").read_text())
 
     def test_artifact_targets(self):
         manifest = json.loads((ROOT / "artifact/manifest.json").read_text())
         self.assertEqual(
             set(manifest["targets"]),
-            {"smoke", "gpu-smoke", "quality", "robustness", "finite-gpu-quality", "fourier-control", "system", "hierarchy"},
+            {"smoke", "evidence", "doctor", "build", "gpu-smoke", "quality", "robustness", "finite-gpu-quality", "fourier-control", "system", "hierarchy", "external-hierarchy"},
         )
 
     def test_claim_anchors_and_roles(self):

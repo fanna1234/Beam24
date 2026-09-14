@@ -2,9 +2,11 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+source "$ROOT/artifact/scripts/runtime_env.sh"
 DATA_ROOT="${BEAM24_DATA_ROOT:-}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 [[ -n "$DATA_ROOT" ]] || { echo "set BEAM24_DATA_ROOT" >&2; exit 4; }
+BEAM24_DATA_ROOT="$DATA_ROOT" "$ROOT/artifact/scripts/get_data.sh" spib
 mkdir -p "$ROOT/artifact/runs"
 RUN_DIR="$(mktemp -d "$ROOT/artifact/runs/quality.XXXXXX")"
 
@@ -19,13 +21,6 @@ sensor_file="$DATA_ROOT/spib/SACLANT_sens.dat"
   --data-dir "$spib_dir" --sensors "$sensor_file" \
   --output "$RUN_DIR/spib48.json"
 
-"$PYTHON_BIN" - "$RUN_DIR/spib48.json" <<'PY'
-import json, sys
-r = json.load(open(sys.argv[1]))["summary"]["Q2_localf4_joint_top2"]
-anchor = 0.99998
-value = r["mean_map_correlation"]
-label = "[OK >=reference]" if round(value, 5) >= anchor else "[~within3%]" if value >= 0.97 * anchor else "[LOW]"
-print(f"SPIB48 map correlation measured={value:.6f} reference={anchor:.5f} {label}")
-if value < 0.97 * anchor:
-    raise SystemExit(5)
-PY
+"$PYTHON_BIN" "$ROOT/scripts/check_real_quality.py" "$RUN_DIR/spib48.json" \
+  "$ROOT/artifact/expected/reference_anchors.json"
+echo "$RUN_DIR"

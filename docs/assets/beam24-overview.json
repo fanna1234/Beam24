@@ -1,0 +1,17 @@
+{
+  "kind": "illustrative phase example and schematic primary K512 pipeline",
+  "phase_step_radians": 0.7853981633974483,
+  "mode_energy_fractions": [
+    0.4267766952966369,
+    0.4267766952966369,
+    0.07322330470336309,
+    0.07322330470336309
+  ],
+  "retained_modes": [
+    0,
+    1
+  ],
+  "transform_source": "src/quality/spib_vla_screen.py",
+  "transform_source_sha256": "abf345c0571a5ff15602fe22a589c7b73f4e18c7eed9fa92cfeaed1767c342cd",
+  "scope": "local K4 support, not an MMA tile or a measured real-array recording"
+}

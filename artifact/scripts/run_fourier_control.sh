@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+source "$ROOT/artifact/scripts/runtime_env.sh"
 BUILD_DIR="${BEAM24_BUILD_DIR:-$ROOT/build/sm120}"
 LOCK="${BEAM24_GPU_LOCK:-/tmp/beam24_gpu_campaign.lock}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"

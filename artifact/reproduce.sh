@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
+source "$ROOT/artifact/scripts/runtime_env.sh"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 DRY_RUN=0
 TARGET=""
@@ -10,7 +11,10 @@ TARGET=""
 for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=1 ;;
-    smoke|gpu-smoke|quality|robustness|finite-gpu-quality|fourier-control|system|hierarchy|all) TARGET="$arg" ;;
+    smoke|evidence|doctor|build|gpu-smoke|quality|robustness|finite-gpu-quality|fourier-control|system|hierarchy|external-hierarchy|all)
+      [[ -z "$TARGET" ]] || { echo 'select one reproduction target' >&2; exit 2; }
+      TARGET="$arg" ;;
+    help|-h|--help) TARGET=help ;;
     *) echo "unknown argument: $arg" >&2; exit 2 ;;
   esac
 done
@@ -70,6 +74,25 @@ run_hierarchy() {
 }
 
 case "$TARGET" in
+  help)
+    printf '%s\n' 'Usage: ./reproduce.sh TARGET [--dry-run]' \
+      'CPU: smoke, evidence, quality, robustness' \
+      'GPU: doctor, build, gpu-smoke, finite-gpu-quality' \
+      'Compare: external-hierarchy, hierarchy, system, fourier-control' \
+      'See docs/REPRODUCIBILITY.md for setup and all target scopes.'
+    ;;
+  evidence)
+    run "$PYTHON_BIN" "$ROOT/scripts/check_reference_anchors.py"
+    run "$PYTHON_BIN" "$ROOT/scripts/check_claim_framing.py"
+    ;;
+  doctor) run "$ROOT/artifact/scripts/check_env.sh" gpu ;;
+  build) run bash "$ROOT/artifact/scripts/build.sh" ;;
+  external-hierarchy)
+    run "$ROOT/artifact/scripts/check_env.sh" gpu
+    run bash "$ROOT/artifact/scripts/build.sh"
+    run bash "$ROOT/artifact/scripts/build_ccglib.sh"
+    run "$PYTHON_BIN" "$ROOT/scripts/run_external_hierarchy.py"
+    ;;
   smoke) run_smoke ;;
   gpu-smoke) run_gpu_smoke ;;
   quality) run_quality ;;
@@ -78,5 +101,11 @@ case "$TARGET" in
   fourier-control) run_fourier_control ;;
   system) run_system ;;
   hierarchy) run_hierarchy ;;
-  all) run_smoke; run_robustness; run_gpu_smoke; run_finite_gpu_quality; run_fourier_control; run_quality; run_system; run_hierarchy ;;
+  all)
+    run_smoke; run_robustness; run_gpu_smoke; run_finite_gpu_quality
+    run_fourier_control; run_quality
+    run bash "$ROOT/artifact/scripts/build_ccglib.sh"
+    run "$PYTHON_BIN" "$ROOT/scripts/run_external_hierarchy.py"
+    run_system; run_hierarchy
+    ;;
 esac

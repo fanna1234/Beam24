@@ -1,171 +1,70 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="500" viewBox="0 0 1200 500" role="img" aria-labelledby="title desc">
-  <title id="title">Beam24 signal-to-hardware pipeline</title>
-  <desc id="desc">Regular-array phase is transformed into joint-complex two-of-four support, angular locality produces a fixed refinement tile, sparse tensor cores accumulate four real products, and the GPU selects top-1 without materializing the complex output.</desc>
-  <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="#34383c"/>
-    </marker>
-    <style>
-      .stage { fill:#ffffff; stroke:#34383c; stroke-width:1.5; rx:10; }
-      .stage-title { font:700 18px Arial,Helvetica,sans-serif; fill:#111820; }
-      .label { font:15px Arial,Helvetica,sans-serif; fill:#111820; }
-      .small { font:13px Arial,Helvetica,sans-serif; fill:#34383c; }
-      .value { font:14px Georgia,'Times New Roman',serif; fill:#111820; text-anchor:middle; }
-      .flow { fill:none; stroke:#34383c; stroke-width:2.2; marker-end:url(#arrow); }
-      .arrow-head { fill:#34383c; }
-      .minor { fill:none; stroke:#aeb4b9; stroke-width:1; }
-      .matrix { stroke:#687078; stroke-width:1; }
-      .metric { fill:#f7f9fa; stroke:#687078; stroke-width:1.2; rx:8; }
-      .metric-value { font:700 22px Arial,Helvetica,sans-serif; fill:#111820; text-anchor:middle; }
-      .metric-label { font:13px Arial,Helvetica,sans-serif; fill:#34383c; text-anchor:middle; }
-    </style>
-  </defs>
-
-  <rect width="1200" height="500" fill="#ffffff"/>
-  <text x="600" y="30" text-anchor="middle" class="stage-title">signal structure → fixed sparse operands → register-resident top-1</text>
-
-  <!-- Stage 1: local phase structure. -->
-  <rect class="stage" x="28" y="52" width="270" height="322"/>
-  <rect x="28" y="52" width="270" height="42" rx="10" fill="#e5f3fa"/>
-  <text x="48" y="79" class="stage-title">1  Local phase structure</text>
-
-  <line x1="54" y1="135" x2="182" y2="135" stroke="#687078" stroke-width="2"/>
-  <g fill="#ffffff" stroke="#34383c" stroke-width="1.5">
-    <circle cx="66" cy="135" r="8"/><circle cx="104" cy="135" r="8"/>
-    <circle cx="142" cy="135" r="8"/><circle cx="180" cy="135" r="8"/>
-  </g>
-  <g stroke="#56a0c2" stroke-width="3" marker-end="url(#arrow)">
-    <line x1="66" y1="135" x2="91" y2="128"/>
-    <line x1="104" y1="135" x2="127" y2="118"/>
-    <line x1="142" y1="135" x2="160" y2="108"/>
-    <line x1="180" y1="135" x2="184" y2="101"/>
-  </g>
-  <text x="221" y="124" class="label" text-anchor="middle">local F₄</text>
-  <path d="M 202 135 L 240 135" fill="none" stroke="#34383c" stroke-width="2.2"/>
-  <path class="arrow-head" d="M 249 135 L 239 130 L 239 140 Z"/>
-
-  <text x="163" y="181" class="small" text-anchor="middle">actual joint-complex group (×10³)</text>
-  <g class="matrix">
-    <rect x="50" y="194" width="52" height="36" fill="#a8cf80"/>
-    <rect x="102" y="194" width="52" height="36" fill="#f1f3f4"/>
-    <rect x="154" y="194" width="52" height="36" fill="#f1f3f4"/>
-    <rect x="206" y="194" width="52" height="36" fill="#e8f1dc"/>
-    <rect x="50" y="230" width="52" height="36" fill="#a8cf80"/>
-    <rect x="102" y="230" width="52" height="36" fill="#f1f3f4"/>
-    <rect x="154" y="230" width="52" height="36" fill="#f1f3f4"/>
-    <rect x="206" y="230" width="52" height="36" fill="#e8f1dc"/>
-  </g>
-  <g class="value">
-    <text x="76" y="217">.873</text><text x="128" y="217">0</text><text x="180" y="217">0</text><text x="232" y="217">.299</text>
-    <text x="76" y="253">1.420</text><text x="128" y="253">0</text><text x="180" y="253">0</text><text x="232" y="253">−1.254</text>
-  </g>
-  <text x="163" y="294" class="label" text-anchor="middle">one support for real + imaginary</text>
-  <text x="163" y="321" class="stage-title" text-anchor="middle">joint-complex 2:4</text>
-  <text x="163" y="348" class="small" text-anchor="middle">no antenna-domain pruning</text>
-
-  <!-- Stage 2: angular locality. -->
-  <rect class="stage" x="322" y="52" width="270" height="322"/>
-  <rect x="322" y="52" width="270" height="42" rx="10" fill="#e5f3fa"/>
-  <text x="342" y="79" class="stage-title">2  Angular locality</text>
-  <text x="457" y="121" class="small" text-anchor="middle">Stage 1: measured top-8 sectors</text>
-  <g class="matrix">
-    <rect x="345" y="136" width="28" height="34" fill="#a8cf80"/>
-    <rect x="373" y="136" width="28" height="34" fill="#dcecf3"/>
-    <rect x="401" y="136" width="28" height="34" fill="#dcecf3"/>
-    <rect x="429" y="136" width="28" height="34" fill="#dcecf3"/>
-    <rect x="457" y="136" width="28" height="34" fill="#dcecf3"/>
-    <rect x="485" y="136" width="28" height="34" fill="#dcecf3"/>
-    <rect x="513" y="136" width="28" height="34" fill="#dcecf3"/>
-    <rect x="541" y="136" width="28" height="34" fill="#dcecf3"/>
-  </g>
-  <g class="value">
-    <text x="359" y="158">77</text><text x="387" y="158">112</text><text x="415" y="158">76</text><text x="443" y="158">46</text>
-    <text x="471" y="158">78</text><text x="499" y="158">111</text><text x="527" y="158">79</text><text x="555" y="158">75</text>
-  </g>
-  <path d="M 457 183 L 457 206" fill="none" stroke="#34383c" stroke-width="2.2"/>
-  <path class="arrow-head" d="M 457 215 L 452 205 L 462 205 Z"/>
-  <text x="457" y="238" class="small" text-anchor="middle">expand 8 fixed neighborhoods</text>
-  <g class="matrix">
-    <rect x="352" y="253" width="28" height="26" fill="#a8cf80"/><rect x="380" y="253" width="28" height="26" fill="#f1f3f4"/>
-    <rect x="408" y="253" width="28" height="26" fill="#dcecf3"/><rect x="436" y="253" width="28" height="26" fill="#f1f3f4"/>
-    <rect x="464" y="253" width="28" height="26" fill="#a8cf80"/><rect x="492" y="253" width="28" height="26" fill="#f1f3f4"/>
-    <rect x="520" y="253" width="28" height="26" fill="#dcecf3"/><rect x="548" y="253" width="28" height="26" fill="#f1f3f4"/>
-    <rect x="352" y="279" width="28" height="26" fill="#a8cf80"/><rect x="380" y="279" width="28" height="26" fill="#f1f3f4"/>
-    <rect x="408" y="279" width="28" height="26" fill="#dcecf3"/><rect x="436" y="279" width="28" height="26" fill="#f1f3f4"/>
-    <rect x="464" y="279" width="28" height="26" fill="#a8cf80"/><rect x="492" y="279" width="28" height="26" fill="#f1f3f4"/>
-    <rect x="520" y="279" width="28" height="26" fill="#dcecf3"/><rect x="548" y="279" width="28" height="26" fill="#f1f3f4"/>
-  </g>
-  <text x="457" y="332" class="stage-title" text-anchor="middle">fixed 128-row tile</text>
-  <text x="457" y="357" class="small" text-anchor="middle">15.6% of exhaustive beam–sensor work</text>
-
-  <!-- Stage 3: sparse complex execution. -->
-  <rect class="stage" x="616" y="52" width="270" height="322"/>
-  <rect x="616" y="52" width="270" height="42" rx="10" fill="#e8f1dc"/>
-  <text x="636" y="79" class="stage-title">3  Sparse Tensor Cores</text>
-  <text x="751" y="121" class="small" text-anchor="middle">shared metadata across four real products</text>
-
-  <g class="matrix">
-    <rect x="646" y="143" width="72" height="72" fill="#e8f1dc"/>
-    <rect x="718" y="143" width="72" height="72" fill="#dcecf3"/>
-    <rect x="646" y="215" width="72" height="72" fill="#f1f3f4"/>
-    <rect x="718" y="215" width="72" height="72" fill="#e5f3fa"/>
-  </g>
-  <g class="value">
-    <text x="682" y="174">SᵣZᵣ</text><text x="754" y="174">SᵣZᵢ</text>
-    <text x="682" y="246">SᵢZᵣ</text><text x="754" y="246">SᵢZᵢ</text>
-  </g>
-  <path d="M 794 215 L 799 215" fill="none" stroke="#34383c" stroke-width="2.2"/>
-  <path class="arrow-head" d="M 808 215 L 798 210 L 798 220 Z"/>
-  <rect x="814" y="147" width="56" height="136" fill="#ffffff" stroke="#34383c" stroke-width="1.2" rx="6"/>
-  <text x="842" y="176" class="small" text-anchor="middle">4×</text>
-  <text x="842" y="200" class="label" text-anchor="middle">mma.sp</text>
-  <text x="842" y="227" class="small" text-anchor="middle">FP32</text>
-  <text x="842" y="250" class="small" text-anchor="middle">accum.</text>
-  <text x="751" y="317" class="stage-title" text-anchor="middle">one complex sparse operator</text>
-  <text x="751" y="344" class="small" text-anchor="middle">Local-F4 fused into the producer</text>
-
-  <!-- Stage 4: fused consumer. -->
-  <rect class="stage" x="910" y="52" width="262" height="322"/>
-  <rect x="910" y="52" width="262" height="42" rx="10" fill="#e5f3fa"/>
-  <text x="930" y="79" class="stage-title">4  GPU-resident consumer</text>
-  <rect x="940" y="128" width="92" height="62" fill="#e5f3fa" stroke="#687078" stroke-width="1.2" rx="6"/>
-  <text x="986" y="151" class="small" text-anchor="middle">register fragment</text>
-  <text x="986" y="176" class="label" text-anchor="middle">Yᵣ , Yᵢ</text>
-  <path d="M 1038 159 L 1071 159" fill="none" stroke="#34383c" stroke-width="2.2"/>
-  <path class="arrow-head" d="M 1080 159 L 1070 154 L 1070 164 Z"/>
-  <rect x="1086" y="128" width="58" height="62" fill="#e8f1dc" stroke="#687078" stroke-width="1.2" rx="6"/>
-  <text x="1115" y="153" class="label" text-anchor="middle">|Y|²</text>
-  <text x="1115" y="176" class="small" text-anchor="middle">power</text>
-  <path d="M 1115 198 L 1115 226" fill="none" stroke="#34383c" stroke-width="2.2"/>
-  <path class="arrow-head" d="M 1115 235 L 1110 225 L 1120 225 Z"/>
-  <rect x="990" y="242" width="154" height="48" fill="#a8cf80" stroke="#4a7500" stroke-width="1.4" rx="7"/>
-  <text x="1067" y="272" class="stage-title" text-anchor="middle">GPU top-1 beam</text>
-
-  <path d="M 986 197 L 986 302" fill="none" stroke="#c66a2b" stroke-width="1.8" stroke-dasharray="5 4"/>
-  <rect x="940" y="308" width="160" height="38" fill="#fff8f2" stroke="#c66a2b" stroke-width="1.2" rx="5"/>
-  <text x="1020" y="333" class="small" text-anchor="middle">HBM: 2 GiB complex Y</text>
-  <line x1="1112" y1="314" x2="1138" y2="340" stroke="#c66a2b" stroke-width="3"/>
-  <line x1="1138" y1="314" x2="1112" y2="340" stroke="#c66a2b" stroke-width="3"/>
-  <text x="1042" y="367" class="small" text-anchor="middle">write avoided</text>
-
-  <!-- Cross-stage arrows. -->
-  <path d="M 303 214 L 307 214" fill="none" stroke="#34383c" stroke-width="2.2"/>
-  <path class="arrow-head" d="M 316 214 L 306 209 L 306 219 Z"/>
-  <path d="M 597 214 L 601 214" fill="none" stroke="#34383c" stroke-width="2.2"/>
-  <path class="arrow-head" d="M 610 214 L 600 209 L 600 219 Z"/>
-  <path d="M 891 214 L 895 214" fill="none" stroke="#34383c" stroke-width="2.2"/>
-  <path class="arrow-head" d="M 904 214 L 894 209 L 894 219 Z"/>
-
-  <!-- Headline measured contract. -->
-  <rect class="metric" x="186" y="403" width="220" height="70"/>
-  <text x="296" y="432" class="metric-value">0.470 ms</text>
-  <text x="296" y="457" class="metric-label">complete K512 top-1 pipeline</text>
-
-  <rect class="metric" x="490" y="403" width="220" height="70"/>
-  <text x="600" y="432" class="metric-value">3.88×</text>
-  <text x="600" y="457" class="metric-label">vs. external identical hierarchy</text>
-
-  <rect class="metric" x="794" y="403" width="220" height="70"/>
-  <text x="904" y="432" class="metric-value">99.93%</text>
-  <text x="904" y="457" class="metric-label">dense-GPU top-1 agreement</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="360" viewBox="0 0 1160 360" role="img" aria-labelledby="title desc">
+<title id="title">Beam24: local structure and coarse-to-fine beam search</title>
+<desc id="desc">An illustrative regular-array phase progression produces four Fourier modes. Retaining two gives support shared by real and imaginary weights. Both GPU search stages use this representation, and the complete pipeline returns beam index and power without storing the full complex response matrix.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#202124"/></marker></defs>
+<rect width="1160" height="360" rx="8" fill="white"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#111111">
+<text x="20" y="27" font-size="14" font-weight="600" text-anchor="start">LOCAL STRUCTURE</text>
+<text x="117" y="62" font-size="20" font-weight="600" text-anchor="middle">Array phase</text>
+<path d="M25 115 L205 115" stroke="#aab1b8" stroke-width="1.6" fill="none"/>
+<circle cx="47" cy="112" r="16" fill="white" stroke="#7f9cb2" stroke-width="1.5"/>
+<path d="M47 112 L70.0 112.0" stroke="#202124" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+<circle cx="94" cy="112" r="16" fill="white" stroke="#7f9cb2" stroke-width="1.5"/>
+<path d="M94 112 L110.2634559672906 95.7365440327094" stroke="#202124" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+<circle cx="141" cy="112" r="16" fill="white" stroke="#7f9cb2" stroke-width="1.5"/>
+<path d="M141 112 L141.0 89.0" stroke="#202124" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+<circle cx="188" cy="112" r="16" fill="white" stroke="#7f9cb2" stroke-width="1.5"/>
+<path d="M188 112 L171.73654403270942 95.7365440327094" stroke="#202124" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+<text x="117" y="157" font-size="15" font-weight="400" text-anchor="middle">Four adjacent sensors</text>
+<path d="M226 110 L268 110" stroke="#202124" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+<text x="352" y="62" font-size="20" font-weight="600" text-anchor="middle">Local F4 modes</text>
+<rect x="291" y="70.000" width="25" height="62.000" fill="#88aac4"/>
+<text x="303.5" y="152" font-size="14" font-weight="400" text-anchor="middle">0</text>
+<rect x="326" y="70.000" width="25" height="62.000" fill="#88aac4"/>
+<text x="338.5" y="152" font-size="14" font-weight="400" text-anchor="middle">1</text>
+<rect x="361" y="121.362" width="25" height="10.638" fill="#d9dfe4"/>
+<text x="373.5" y="152" font-size="14" font-weight="400" text-anchor="middle">2</text>
+<rect x="396" y="121.362" width="25" height="10.638" fill="#d9dfe4"/>
+<text x="408.5" y="152" font-size="14" font-weight="400" text-anchor="middle">3</text>
+<path d="M286 132 L431 132" stroke="#6b7279" stroke-width="1" fill="none"/>
+<path d="M444 110 L482 110" stroke="#202124" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+<text x="620" y="62" font-size="20" font-weight="600" text-anchor="middle">Joint-complex 2:4</text>
+<text x="516" y="106" font-size="16" font-weight="400" text-anchor="end">Re</text>
+<rect x="530" y="85" width="42" height="29" fill="#b7cedf" stroke="#9ea7b0" stroke-width="0.8"/>
+<rect x="572" y="85" width="42" height="29" fill="#b7cedf" stroke="#9ea7b0" stroke-width="0.8"/>
+<rect x="614" y="85" width="42" height="29" fill="#f2f4f6" stroke="#9ea7b0" stroke-width="0.8"/>
+<text x="635" y="106" font-size="17" font-weight="400" text-anchor="middle">0</text>
+<rect x="656" y="85" width="42" height="29" fill="#f2f4f6" stroke="#9ea7b0" stroke-width="0.8"/>
+<text x="677" y="106" font-size="17" font-weight="400" text-anchor="middle">0</text>
+<text x="516" y="135" font-size="16" font-weight="400" text-anchor="end">Im</text>
+<rect x="530" y="114" width="42" height="29" fill="#b7cedf" stroke="#9ea7b0" stroke-width="0.8"/>
+<rect x="572" y="114" width="42" height="29" fill="#b7cedf" stroke="#9ea7b0" stroke-width="0.8"/>
+<rect x="614" y="114" width="42" height="29" fill="#f2f4f6" stroke="#9ea7b0" stroke-width="0.8"/>
+<text x="635" y="135" font-size="17" font-weight="400" text-anchor="middle">0</text>
+<rect x="656" y="114" width="42" height="29" fill="#f2f4f6" stroke="#9ea7b0" stroke-width="0.8"/>
+<text x="677" y="135" font-size="17" font-weight="400" text-anchor="middle">0</text>
+<text x="614" y="163" font-size="15" font-weight="400" text-anchor="middle">One support for both planes</text>
+<path d="M721 110 L765 110" stroke="#202124" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+<rect x="790" y="77" width="340" height="73" rx="6" fill="#e8f0f7"/>
+<text x="960" y="108" font-size="22" font-weight="600" text-anchor="middle">Complex sparse MMA</text>
+<text x="960" y="134" font-size="17" font-weight="400" text-anchor="middle">FP32 accumulation</text>
+<path d="M20 190 H1135" stroke="#bcc4cc" stroke-dasharray="5 5"/>
+<text x="20" y="220" font-size="14" font-weight="600" text-anchor="start">GPU SEARCH</text>
+<rect x="20" y="239" width="235" height="74" rx="6" fill="#e8f0f7"/>
+<text x="137.5" y="270" font-size="21" font-weight="600" text-anchor="middle">Coarse search</text>
+<text x="137.5" y="297" font-size="17" font-weight="400" text-anchor="middle">K128 · 128 beams</text>
+<rect x="320" y="239" width="245" height="74" rx="6" fill="#f2f5f7"/>
+<text x="442.5" y="270" font-size="21" font-weight="600" text-anchor="middle">Select + gather</text>
+<text x="442.5" y="297" font-size="17" font-weight="400" text-anchor="middle">8 sectors → 128 rows</text>
+<rect x="630" y="239" width="235" height="74" rx="6" fill="#e8f0f7"/>
+<text x="747.5" y="270" font-size="21" font-weight="600" text-anchor="middle">Refine</text>
+<text x="747.5" y="297" font-size="17" font-weight="400" text-anchor="middle">K512 full aperture</text>
+<rect x="930" y="239" width="205" height="74" rx="6" fill="#f2f5f7"/>
+<text x="1032.5" y="270" font-size="21" font-weight="600" text-anchor="middle">Power + top-1</text>
+<text x="1032.5" y="297" font-size="17" font-weight="400" text-anchor="middle">Beam index + power</text>
+<path d="M269 275 L306 275" stroke="#202124" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+<path d="M578 275 L616 275" stroke="#202124" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+<path d="M879 275 L916 275" stroke="#202124" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+<text x="20" y="346" font-size="15" font-weight="400" text-anchor="start">Both search stages use the sparse representation; no full complex response matrix is written.</text>
+</g>
 </svg>

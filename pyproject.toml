@@ -2,7 +2,7 @@
 name = "beam24"
 version = "0.1.0.dev0"
 description = "Signal-structured 2:4 Sparse Tensor-Core beamforming"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 license = {text = "MIT"}
 dependencies = [
   "numpy>=2.0,<2.8",

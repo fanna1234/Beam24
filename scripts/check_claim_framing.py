@@ -196,6 +196,10 @@ def main() -> None:
 
     required_text = {
         "README.md": (
+            "3.88", "99.93", "ccglib", "Local-F4", "docs/RESULTS.md",
+            "docs/REPRODUCIBILITY.md",
+        ),
+        "docs/RESULTS.md": (
             "**External:** materialized ccglib pipeline",
             "**Attribution:** internal dense-fused control",
             "**2.37665x**",
@@ -258,6 +262,8 @@ def main() -> None:
     )
     maintained = [
         ROOT / "README.md",
+        ROOT / "docs/RESULTS.md",
+        ROOT / "docs/DESIGN.md",
         ROOT / "docs/CLAIMS.md",
         ROOT / "docs/CLAIM_TAXONOMY.md",
         ROOT / "artifact/README.md",

@@ -4,7 +4,12 @@
     "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
     "compute_capability": "12.0",
     "cuda": "13.2.51",
-    "shape": {"batch": 256, "m": 1024, "n": 1024, "k": 512},
+    "shape": {
+      "batch": 256,
+      "m": 1024,
+      "n": 1024,
+      "k": 512
+    },
     "input": "planar complex FP16",
     "accumulation": "FP32",
     "timing": "CUDA events; 20 warmups; 100 iterations; six independent AB/BA processes",
@@ -20,7 +25,12 @@
       "commit": "756cc1436136387087d9f5f4778c90f347658cd0",
       "license": "Apache-2.0",
       "role": "primary external dense complex Tensor-Core baseline",
-      "sparse_paths": []
+      "sparse_paths": [],
+      "requires": [
+        "cudawrappers",
+        "xtl",
+        "xtensor"
+      ]
     },
     {
       "id": "cutlass",
@@ -65,6 +75,30 @@
       "documentation": "https://docs.nvidia.com/cuda/cufft/",
       "license": "NVIDIA CUDA Toolkit component terms",
       "role": "Fourier-family system lower bound"
+    },
+    {
+      "id": "cudawrappers",
+      "name": "cudawrappers",
+      "repository": "https://github.com/nlesc-recruit/cudawrappers",
+      "commit": "c76273190ee6b2535c7091607be732c98c84aec6",
+      "license": "Apache-2.0",
+      "role": "ccglib dependency pinned to the evaluated build"
+    },
+    {
+      "id": "xtl",
+      "name": "xtl",
+      "repository": "https://github.com/xtensor-stack/xtl.git",
+      "commit": "a7c1c5444dfc57f76620391af4c94785ff82c8d6",
+      "license": "BSD-3-Clause",
+      "role": "ccglib dependency pinned to the evaluated build"
+    },
+    {
+      "id": "xtensor",
+      "name": "xtensor",
+      "repository": "https://github.com/xtensor-stack/xtensor.git",
+      "commit": "3634f2ded19e0cf38208c8b86cea9e1d7c8e397d",
+      "license": "BSD-3-Clause",
+      "role": "ccglib dependency pinned to the evaluated build"
     }
   ],
   "external_related_methods": [

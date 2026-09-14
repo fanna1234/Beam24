@@ -3,6 +3,8 @@ set -euo pipefail
 
 TARGET="${1:-}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+source "$ROOT/artifact/scripts/runtime_env.sh"
+case "$TARGET" in acoular|spib|locata) ;; *) echo "usage: $0 {acoular|spib|locata}" >&2; exit 2 ;; esac
 DATA_ROOT="${BEAM24_DATA_ROOT:-$ROOT/work/datasets}"
 mkdir -p "$DATA_ROOT"
 
@@ -13,7 +15,10 @@ md5_value() {
 fetch() {
   local url="$1" output="$2" expected="${3:-}"
   if [[ ! -f "$output" ]]; then
-    curl -L --fail --show-error --progress-bar "$url" -o "$output"
+    curl -L --fail --show-error --retry 3 --continue-at - --progress-bar "$url" -o "$output.part"
+    actual="$(md5_value "$output.part")"
+    [[ "$actual" == "$expected" ]] || { echo "checksum mismatch: $output.part" >&2; exit 6; }
+    mv "$output.part" "$output"
   fi
   if [[ -n "$expected" ]]; then
     local actual
@@ -33,6 +38,7 @@ case "$TARGET" in
     fetch "https://spib.linse.ufsc.br/data/array/A2601_1_10.zip" "$dir/A2601_1_10.zip" b05df6154890cc4fc64c044cc61a9f2c
     fetch "https://spib.linse.ufsc.br/data/array/SACLANT_sens.dat" "$dir/SACLANT_sens.dat" 126b4ae6e007030ffb510dd7d720f4bc
     [[ -d "$dir/A2601_1_10" ]] || unzip -q "$dir/A2601_1_10.zip" -d "$dir/A2601_1_10"
+    "$PYTHON_BIN" "$ROOT/scripts/check_spib_extraction.py" "$dir/A2601_1_10.zip" "$dir/A2601_1_10"
     ;;
   locata)
     dir="$DATA_ROOT/locata"; mkdir -p "$dir"
@@ -45,4 +51,4 @@ case "$TARGET" in
   *) echo "usage: $0 {acoular|spib|locata}" >&2; exit 2 ;;
 esac
 
-echo "$DATA_ROOT/$TARGET"
+echo "$dir"

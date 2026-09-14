@@ -124,6 +124,10 @@ python3 artifact/scripts/get_baselines.py all
 ```
 
 The fetcher refuses to overwrite a checkout at a different revision.
+It also rejects dirty or wrong-origin checkouts. Fetching `ccglib` includes
+its cudawrappers, xtl, and xtensor dependencies at the evaluated commits.
+Run `./reproduce.sh external-hierarchy` for the complete pinned build,
+correctness admission, and paired same-algorithm comparison.
 
 ## Current completion boundary
 

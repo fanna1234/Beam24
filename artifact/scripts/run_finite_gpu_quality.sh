@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+source "$ROOT/artifact/scripts/runtime_env.sh"
 BUILD_DIR="${BEAM24_BUILD_DIR:-$ROOT/build/sm120}"
 LOCK="${BEAM24_GPU_LOCK:-/tmp/beam24_gpu_campaign.lock}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
@@ -26,11 +27,12 @@ seeds=(20260831 20260901 20260902)
 } >"$RUN_DIR/environment.txt"
 
 exec 9>"$LOCK"
-flock -x 9
+flock -n 9 || { echo 'GPU campaign lock is busy' >&2; exit 7; }
 for condition_index in "${!conditions[@]}"; do
   condition="${conditions[$condition_index]}"
   for seed in "${seeds[@]}"; do
     for chunk in 0 1 2 3; do
+      "$PYTHON_BIN" "$ROOT/scripts/check_gpu_idle.py"
       "$BINARY" 1 0 1 256 1024 0 0 "$condition_index" "$seed" \
         "$((chunk * 256))" 5 1 \
         >"$RUN_DIR/${condition}_seed${seed}_chunk${chunk}.jsonl" 2>&1

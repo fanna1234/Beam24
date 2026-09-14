@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+source "$ROOT/artifact/scripts/runtime_env.sh"
 BUILD_DIR="${BEAM24_BUILD_DIR:-$ROOT/build/sm120}"
 LOCK="${BEAM24_GPU_LOCK:-/tmp/beam24_gpu_campaign.lock}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
@@ -27,11 +28,12 @@ HIERARCHY="$BUILD_DIR/beam24_hierarchical_system"
 } > "$RUN_DIR/environment.txt"
 
 exec 9>"$LOCK"
-flock -x 9
+flock -n 9 || { echo 'GPU campaign lock is busy' >&2; exit 7; }
 orders=("E H" "H E" "E H" "H E" "E H" "H E")
 for process in 0 1 2 3 4 5; do
   read -r first second <<< "${orders[$process]}"
   for position in 0 1; do
+    "$PYTHON_BIN" "$ROOT/scripts/check_gpu_idle.py"
     if [[ "$position" == 0 ]]; then variant="$first"; else variant="$second"; fi
     log="$RUN_DIR/logs/process_${process}_position_${position}_${variant}.log"
     case "$variant" in

@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+source "$ROOT/artifact/scripts/runtime_env.sh"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 mkdir -p "$ROOT/artifact/runs"
 RUN_DIR="$(mktemp -d "$ROOT/artifact/runs/smoke.XXXXXX")"

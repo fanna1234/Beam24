@@ -1,12 +1,14 @@
 .PHONY: check lint ci smoke configure gpu-build
 
+PYTHON ?= $(if $(BEAM24_PYTHON),$(BEAM24_PYTHON),$(if $(PYTHON_BIN),$(PYTHON_BIN),python3))
+
 check:
-	python3 -m compileall -q src scripts tests artifact/scripts
-	python3 scripts/check_baseline_manifest.py
-	python3 scripts/check_evaluation_matrix.py
-	python3 scripts/check_reference_anchors.py
-	python3 scripts/check_claim_framing.py
-	python3 -m unittest discover -s tests -v
+	"$(PYTHON)" -m compileall -q src scripts tests artifact/scripts
+	"$(PYTHON)" scripts/check_baseline_manifest.py
+	"$(PYTHON)" scripts/check_evaluation_matrix.py
+	"$(PYTHON)" scripts/check_reference_anchors.py
+	"$(PYTHON)" scripts/check_claim_framing.py
+	"$(PYTHON)" -m unittest discover -s tests -v
 	@if command -v shellcheck >/dev/null 2>&1; then \
 		$(MAKE) lint; \
 	else \

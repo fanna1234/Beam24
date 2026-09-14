@@ -20,7 +20,7 @@ def run(*args: str, dry_run: bool = False) -> None:
 
 
 def current_commit(path: Path) -> str | None:
-    if not (path / ".git").is_dir():
+    if not (path / ".git").exists():
         return None
     result = subprocess.run(
         ["git", "-C", str(path), "rev-parse", "HEAD"],
@@ -42,6 +42,16 @@ def fetch(source: dict[str, object], destination: Path, dry_run: bool) -> None:
             raise SystemExit(
                 f"refusing to overwrite {checkout}: expected {commit}, found {actual}"
             )
+        actual_origin = subprocess.check_output(
+            ["git", "-C", str(checkout), "remote", "get-url", "origin"], text=True
+        ).strip()
+        if actual_origin.rstrip("/") != repository.rstrip("/"):
+            raise SystemExit(f"unexpected origin for {source_id}: {actual_origin}")
+        dirty = subprocess.check_output(
+            ["git", "-C", str(checkout), "status", "--porcelain"], text=True
+        )
+        if dirty.strip():
+            raise SystemExit(f"refusing dirty baseline checkout: {checkout}")
         print(f"{source_id}: already pinned at {commit}")
         return
 
@@ -55,6 +65,29 @@ def fetch(source: dict[str, object], destination: Path, dry_run: bool) -> None:
     run("git", "-C", str(checkout), "checkout", "--detach", "FETCH_HEAD", dry_run=dry_run)
 
 
+def resolve_sources(sources: list[dict], target: str) -> list[dict]:
+    by_id = {source["id"]: source for source in sources}
+    selected, active, visited = [], set(), set()
+
+    def visit(source_id):
+        if source_id in active:
+            raise ValueError("cyclic baseline dependency")
+        if source_id in visited:
+            return
+        if source_id not in by_id:
+            raise ValueError(f"unknown baseline source: {source_id}")
+        active.add(source_id)
+        for dependency in by_id[source_id].get("requires", []):
+            visit(dependency)
+        active.remove(source_id)
+        visited.add(source_id)
+        selected.append(by_id[source_id])
+
+    for source_id in by_id if target == "all" else [target]:
+        visit(source_id)
+    return selected
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("target", help="source id or 'all'")
@@ -64,10 +97,7 @@ def main() -> None:
 
     manifest = json.loads(MANIFEST.read_text())
     sources = [source for source in manifest["external_sources"] if "repository" in source]
-    selected = sources if args.target == "all" else [s for s in sources if s["id"] == args.target]
-    if not selected:
-        valid = ", ".join(str(source["id"]) for source in sources)
-        raise SystemExit(f"unknown target {args.target!r}; choose one of: {valid}, all")
+    selected = resolve_sources(sources, args.target)
     if not args.dry_run:
         args.root.mkdir(parents=True, exist_ok=True)
     for source in selected:

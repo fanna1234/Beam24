@@ -9,6 +9,8 @@ import statistics
 import sys
 from pathlib import Path
 
+from paired_records import validate_pairs
+
 
 def main() -> None:
     samples_path, anchors_path, output_path = map(Path, sys.argv[1:4])
@@ -17,6 +19,7 @@ def main() -> None:
         for line in samples_path.read_text().splitlines()
         if line.strip()
     ]
+    validate_pairs(records, ("E", "H"))
     by_process: dict[int, dict[str, float]] = {}
     for record in records:
         by_process.setdefault(int(record["process"]), {})[
