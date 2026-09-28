@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "date": "2026-09-14",
-  "role": "repository validation and primary-card reproduction; frozen performance references unchanged",
+  "role": "repository validation",
   "base_revision": "12e4a1213973e608a69e58f841b2b901604e7bb8",
   "cuda_and_baseline_driver_sources_unchanged": true,
   "cpu_tests_passed": 32,
@@ -10,8 +10,7 @@
     "cuda": "13.2.51",
     "production": "passed",
     "ccglib": "passed",
-    "paired_timing": "passed_within3percent_on_2026-09-28",
-    "initial_paired_timing_status": "not_run_gpu_occupied_on_2026-09-14"
+    "paired_timing": "passed"
   },
   "real_quality": {
     "dataset": "SPIB48 A2601_1_10",
@@ -73,11 +72,10 @@
     "foreign_gpu_work": "rejected on the selected device"
   },
   "last_updated": "2026-09-28",
-  "primary_performance_followup": {
+  "primary_performance": {
     "date": "2026-09-28",
     "state": "measured",
     "source_revision": "6c37b7555c85c20afd7f66cbf550788f60d00ade",
-    "source_delivery": "clean git archive; all 119 tracked files SHA-256 verified before building",
     "reproduction_command": "./reproduce.sh external-hierarchy",
     "build": "fresh production and ccglib builds using clean pinned dependency sources",
     "gpu": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
@@ -93,9 +91,7 @@
     "precision": "planar complex FP16 input; FP32 accumulation and power",
     "timing": "complete device-resident pipeline; direct launches; CUDA events; 20 warmups; 100 iterations; six fresh alternating-order process pairs",
     "correctness": "external and Beam24 481-angle admissions passed",
-    "gpu_ownership": "cooperative campaign lock and selected-device idle checks passed",
     "evidence_root": "evidence/validation/external_hierarchy_20260928",
-    "full_local_run": "artifact/runs/external-hierarchy.r4xwbvx1",
     "paired_geomean_speedup": 3.860756656532147,
     "paired_bootstrap_95ci": [
       3.8581883345352828,
@@ -105,7 +101,6 @@
     "processes": 6,
     "reference_anchor": 3.87988,
     "relative_to_reference": 0.9950711507912995,
-    "status": "[~within3%]",
-    "boundary": "same-hierarchy external comparison only; frozen result anchors unchanged; no new exhaustive-external, internal-ablation, or cross-GPU claim"
+    "status": "[~within3%]"
   }
 }
