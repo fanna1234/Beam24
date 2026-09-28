@@ -1,0 +1,29 @@
+{
+  "correctness": {
+    "E": {
+      "kind": "ccglib_same_hierarchy_correctness",
+      "winner_missing": 0,
+      "index_mismatch": 0,
+      "max_relative_power": 0,
+      "dense_a_mismatch": 0,
+      "subarray_input_mismatch": 0,
+      "status": "PASSED"
+    },
+    "H": {
+      "kind": "beam24_hierarchy_correctness",
+      "winner_missing": 0,
+      "index_mismatch": 0,
+      "max_relative_power": 1.72284132e-07,
+      "packed_a_mismatch": 0,
+      "metadata_mismatch": 0,
+      "batch": 481,
+      "status": "PASSED"
+    }
+  },
+  "binary_sha256": {
+    "external": "347f7cb930370907d63001cfea3edc5f2db7b261c8b3e3a856873cee7761dad0",
+    "beam24": "603addb55c2f2a7ab5c3b6e781c2826f91396b14cf3756896ddbb2c45a74a3d5"
+  },
+  "ccglib_library_sha256": "ab8aea11734ea8b20cc730b2750e18da20a09f69ab8f82d4adaa52690a02edd7",
+  "baseline_manifest_sha256": "a3d5895778134f8099d7881f64116cb41d6b235f29181044d01a0f576b8ff323"
+}

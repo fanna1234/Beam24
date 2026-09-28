@@ -1,0 +1,2 @@
+name, driver_version, compute_cap, power.limit [W], clocks.current.sm [MHz], clocks.current.memory [MHz]
+NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 610.43.02, 12.0, 600.00 W, 2617 MHz, 13365 MHz

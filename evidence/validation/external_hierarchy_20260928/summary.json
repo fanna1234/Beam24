@@ -1,0 +1,22 @@
+{
+  "process_ratios": [
+    3.8656070932897175,
+    3.860924083610337,
+    3.855560035006911,
+    3.864118689642607,
+    3.8591009267755836,
+    3.8592377763646266
+  ],
+  "process_wins": 6,
+  "processes": 6,
+  "paired_geomean_speedup": 3.860756656532147,
+  "paired_bootstrap_95ci": [
+    3.8581883345352828,
+    3.8634599868164794
+  ],
+  "comparison_role": "external_same_hierarchy",
+  "reference_anchor": 3.87988,
+  "status": "[~within3%]",
+  "external_median_ms": 1.816873965,
+  "beam24_median_ms": 0.4705756755
+}

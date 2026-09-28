@@ -27,16 +27,34 @@ It checks ten distinct records, finite correlations, the peak-shift bound, and
 the rounded correlation reference. The downloader keeps partial transfers
 separate and verifies extracted recordings before analysis.
 
-## Measurement boundary
+## Primary-card timing follow-up
 
-Fresh GPU execution and timing are recorded separately from build success.
-The primary workstation was occupied by unrelated work during this update;
-the existing performance evidence is not relabeled as a new measurement.
-The Server Edition / CUDA 13.1 run is a functional portability check, not a
-replacement for the Workstation Edition / CUDA 13.2 performance reference.
-The [machine-readable validation record](../evidence/validation/repository_20260914.json)
-records this distinction. The primary-card paired timing run remains pending
-because of unrelated GPU work; no process was stopped or preempted.
+The primary workstation was occupied during the September 14 source update.
+On September 28, a clean export of revision `6c37b7555c85c20afd7f66cbf550788f60d00ade`
+completed `./reproduce.sh external-hierarchy` on the RTX PRO 6000 Blackwell
+Workstation Edition with CUDA 13.2.51 and driver 610.43.02. Both implementations
+were rebuilt from source using the clean, pinned dependency cache. The
+481-angle output admissions passed before six fresh, alternating-order process
+pairs were measured under the existing GPU lock and idle checks.
+
+The paired geometric-mean speedup was **3.86076x**, with 95% process-bootstrap
+CI **[3.85819, 3.86346]** and **6/6 wins**. Median complete-pipeline latencies
+were 1.816874 ms for ccglib and 0.470576 ms for Beam24. The speedup is 0.493%
+below the frozen 3.87988x reference and passes the existing 3% tolerance gate
+with status `[~within3%]`.
+
+The [raw process samples](../evidence/validation/external_hierarchy_20260928/samples.jsonl),
+[summary](../evidence/validation/external_hierarchy_20260928/summary.json),
+[output admission and binary identities](../evidence/validation/external_hierarchy_20260928/admission.json),
+and [environment](../evidence/validation/external_hierarchy_20260928/environment.txt)
+are retained alongside the updated
+[validation record](../evidence/validation/repository_20260914.json).
+
+This completes the primary-card timing check for the current same-hierarchy
+external-comparison runner. The frozen paper results remain unchanged; the
+10.83733x exhaustive-external comparison and internal ablations were not
+remeasured in this follow-up. The earlier Server Edition / CUDA 13.1 run remains
+a separate functional portability check.
 
 The full finite-snapshot, perturbation/coverage, and Fourier campaigns retain
 their original evidence and explicit reproduction targets. They are not
